@@ -83,7 +83,7 @@ class App extends React.Component<IProps, IState> {
           break;
         }
         let result = await getValidatorStatistics(stash, blockHeight);
-        if (result && this.state.rows.indexOf(result.status) < 0) {
+        if (result && result.status && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
@@ -98,7 +98,7 @@ class App extends React.Component<IProps, IState> {
           break;
         }
         let result = await getValidatorStatistics(stash, blockHeight);
-        if (result && this.state.rows.indexOf(result.status) < 0) {
+        if (result && result.status && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
