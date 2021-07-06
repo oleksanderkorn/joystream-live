@@ -1,7 +1,7 @@
 import * as React from 'react';
 import joystream from './joystream.svg';
 import './App.css';
-import { getStatusWs } from './get-status';
+import { getValidatorStatistics } from './get-status';
 import { Button, Container, Grid, TextField, withStyles } from '@material-ui/core';
 import { DataGrid, ColDef } from '@material-ui/data-grid';
 import { ActiveEra } from './joyApi';
@@ -44,21 +44,18 @@ class App extends React.Component<IProps, IState> {
   }
 
   setStash(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event)
     this.setState((prevState) => {
       return { ...prevState, stash: event.target.value }
     });
   }
 
   setBlockStart(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event)
     this.setState((prevState) => {
       return { ...prevState, startBlock: (event.target.value as unknown as number)}
     });
   }
 
   setBlockEnd(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event)
     this.setState((prevState) => {
       return { ...prevState, endBlock: (event.target.value as unknown as number) }
     });
@@ -85,7 +82,7 @@ class App extends React.Component<IProps, IState> {
           });
           break;
         }
-        let result = await getStatusWs(stash, blockHeight);
+        let result = await getValidatorStatistics(stash, blockHeight);
         if (result && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
@@ -100,7 +97,7 @@ class App extends React.Component<IProps, IState> {
           });
           break;
         }
-        let result = await getStatusWs(stash, blockHeight);
+        let result = await getValidatorStatistics(stash, blockHeight);
         if (result && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
@@ -133,7 +130,7 @@ class App extends React.Component<IProps, IState> {
               <TextField onChange={this.setBlockEnd} fullWidth id="block-end" label="End Block" value={this.state.endBlock} variant="filled" />
             </Grid>
             <Grid container item lg={12}>
-              <BootstrapButton fullWidth onClick={this.getStatus} color="primary">{this.state.isLoading ? 'Stop' : 'Get Status'}</BootstrapButton>
+              <BootstrapButton fullWidth onClick={this.getStatus} color="primary">{this.state.isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
             </Grid>
             <div style={{ height: 600, width: '98%' }}>
               <DataGrid rows={this.state.rows} columns={this.state.columns} pageSize={50} />
