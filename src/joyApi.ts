@@ -3,7 +3,8 @@ import { types } from "@joystream/types";
 import { AccountId, Hash } from "@polkadot/types/interfaces";
 import { config } from "dotenv";
 import BN from "bn.js";
-import {Option, Vec} from "@polkadot/types";
+import { Option, Vec } from "@polkadot/types";
+import { log } from "./debug"
 
 config();
 
@@ -77,47 +78,46 @@ export class JoyApi {
     const stash = address || '5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW';
     const blockStart = 1069639;
     const startHash = (await this.api.rpc.chain.getBlockHash(blockStart));
-    console.log(`Start Hash [${startHash}]`);
+    log(`Start Hash [${startHash}]`);
     const startEra = (await this.api.query.staking.activeEra.at(startHash)).unwrap().index.toNumber();
-    console.log(`Start Era [${startEra}]`);
+    log(`Start Era [${startEra}]`);
     const startTimestamp = new Date((await this.api.query.timestamp.now.at(startHash)).toNumber()).toISOString();
-    console.log(`Start Date [${startTimestamp}]`);
+    log(`Start Date [${startTimestamp}]`);
     const blockEnd = 1270177;
     const endHash = (await this.api.rpc.chain.getBlockHash(blockEnd));
-    console.log(`End Hash [${endHash}]`);
+    log(`End Hash [${endHash}]`);
     const endEra = (await this.api.query.staking.activeEra.at(endHash)).unwrap().index.toNumber();
-    console.log(`End Era [${endEra}]`);
+    log(`End Era [${endEra}]`);
     const endTimestamp = new Date((await this.api.query.timestamp.now.at(endHash)).toNumber()).toISOString();
-    console.log(`End Date [${endTimestamp}]`);
+    log(`End Date [${endTimestamp}]`);
 
     let activeEras: number[] = [];
     for (let blockHeight = blockStart; blockHeight < blockEnd; blockHeight += 1) {
       const blockHash = (await this.api.rpc.chain.getBlockHash(blockHeight));
-      //console.log(`Block Hash [${startHash}]`);
+      log(`Block Hash [${startHash}]`);
       const blockEra = (await this.api.query.staking.activeEra.at(blockHash)).unwrap().index.toNumber();
-      //console.log(`Block Era [${blockEra}]`);
+      log(`Block Era [${blockEra}]`);
       const blockTimestamp = new Date((await this.api.query.timestamp.now.at(blockHash)).toNumber()).toISOString();
-      //console.log(`Block Date [${blockTimestamp}]`);  
+      log(`Block Date [${blockTimestamp}]`);  
       const eraPoints = await this.api.query.staking.erasRewardPoints.at(blockHash, blockEra)
-      //console.log(`Era Points [${eraPoints}]`);
-      // const currPoints = 0;
-      eraPoints.individual.forEach((points,author) => {
-          //console.log(`Author Points [${author}]`);
-          //console.log(`Individual Points [${points}]`);
-          if(author.toString() === stash) {
-            // const pn = Number(points.toBigInt())
-            // const activeEra = {
-            //   era: blockEra,
-            //   block: blockHeight,
-            //   date: blockTimestamp,
-            //   points: pn
-            // }
-            const activeEra = blockEra
-            if (activeEras.indexOf(activeEra) < 0) {
-              activeEras.push(activeEra)
-              console.log(`Era [${blockEra}], Date [${blockTimestamp}]`); //, Points [${pn}]
-            }
+      log(`Era Points [${eraPoints}]`);
+      eraPoints.individual.forEach((points, author) => {
+        log(`Author Points [${author}]`);
+        log(`Individual Points [${points}]`);
+        if (author.toString() === stash) {
+          // const pn = Number(points.toBigInt())
+          // const activeEra = {
+          //   era: blockEra,
+          //   block: blockHeight,
+          //   date: blockTimestamp,
+          //   points: pn
+          // }
+          const activeEra = blockEra
+          if (activeEras.indexOf(activeEra) < 0) {
+            activeEras.push(activeEra)
+            log(`Era [${blockEra}], Date [${blockTimestamp}]`); //, Points [${pn}]
           }
+        }
       });
     }
     return {
@@ -133,8 +133,8 @@ export class JoyApi {
     const eraPoints = await this.api.query.staking.erasRewardPoints.at(startHash, startEra)
     let data = undefined
     eraPoints.individual.forEach((points, author) => {
-      // console.log(`Author Points [${author}]`);
-      // console.log(`Individual Points [${points}]`);
+      log(`Author Points [${author}]`);
+      log(`Individual Points [${points}]`);
       if (author.toString() === stash) {
         const pn = Number(points.toBigInt())
         const activeEra: ActiveEra = {
@@ -145,35 +145,35 @@ export class JoyApi {
           date: startTimestamp,
           points: pn
         }
-        //console.log(`Era [${activeEra.era}], Block [${activeEra.block}], Date [${activeEra.date}], Points [${activeEra.points}], Hash [${activeEra.hash}]`);
+        log(`Era [${activeEra.era}], Block [${activeEra.block}], Date [${activeEra.date}], Points [${activeEra.points}], Hash [${activeEra.hash}]`);
         data = activeEra
       }
     });
     return data
   }
-  
+
   async findActiveValidators(hash: Hash, searchPreviousBlocks: boolean): Promise<AccountId[]> {
     const block = await this.api.rpc.chain.getBlock(hash);
 
     let currentBlockNr = block.block.header.number.toNumber();
     let activeValidators;
     do {
-        let currentHash = (await this.api.rpc.chain.getBlockHash(currentBlockNr)) as Hash;
-        let allValidators = await this.api.query.staking.snapshotValidators.at(currentHash) as Option<Vec<AccountId>>;
-        if (!allValidators.isEmpty) {
-            let max = (await this.api.query.staking.validatorCount.at(currentHash)).toNumber();
-            activeValidators = Array.from(allValidators.unwrap()).slice(0, max);
-        }
+      let currentHash = (await this.api.rpc.chain.getBlockHash(currentBlockNr)) as Hash;
+      let allValidators = await this.api.query.staking.snapshotValidators.at(currentHash) as Option<Vec<AccountId>>;
+      if (!allValidators.isEmpty) {
+        let max = (await this.api.query.staking.validatorCount.at(currentHash)).toNumber();
+        activeValidators = Array.from(allValidators.unwrap()).slice(0, max);
+      }
 
-        if (searchPreviousBlocks) {
-            --currentBlockNr;
-        } else {
-            ++currentBlockNr;
-        }
+      if (searchPreviousBlocks) {
+        --currentBlockNr;
+      } else {
+        ++currentBlockNr;
+      }
 
     } while (activeValidators === undefined);
     return activeValidators;
-}
+  }
 
   async validatorsData() {
     const validators = await this.api.query.session.validators();

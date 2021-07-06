@@ -21,6 +21,5 @@ export async function getValidatorStatistics(address: string, blockStart: number
   const status = await PromiseAllObj({
     status: await api.getActiveErasForBlock(address, blockStart)
   })
-  console.log(status);
   return status
 }
