@@ -61,14 +61,19 @@ class App extends React.Component<IProps, IState> {
   async componentDidMount() {
     const timerId = setInterval(
       () => this.updateLastBlock(),
-      10000
+      7000
     );
     this.setState((prevState) => {return {...prevState, timerId}})
   }
 
+  componentWillUnmount() {
+    if (this.state.timerId) {
+      clearInterval(this.state.timerId);
+    }
+  }
+
   async updateLastBlock() {
       const chainState = await getChainState();
-      console.log(chainState)
       this.setState((prevState) => {
         return { ...prevState, lastBlock: chainState.finalizedBlockHeight }
       });
@@ -122,6 +127,11 @@ class App extends React.Component<IProps, IState> {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
+          if (blockHeight === endBlock) {
+            this.setState((prevState) => {
+              return { ...prevState,  isLoading: false}
+            });
+          }
         }
       }
     } else {
@@ -140,6 +150,11 @@ class App extends React.Component<IProps, IState> {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
+          if (blockHeight === endBlock) {
+            this.setState((prevState) => {
+              return { ...prevState,  isLoading: false}
+            });
+          }
         }
       }
     }
@@ -190,9 +205,9 @@ function normalise(value: number, min: number, max: number) {
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number, min: number, max: number }) {
   return props.value > 0 ? (
     <Grid container item lg={12}>
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '98%' }}>
       <Box display="flex" alignItems="center">
-        <Box width="89%" mr={1}>
+        <Box width="100%" mr={1}>
           <LinearProgress variant="determinate" value={normalise(props.value, props.min, props.max)} />
         </Box>
         <Box minWidth={35} style={{whiteSpace: "nowrap"}}>
