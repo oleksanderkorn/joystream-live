@@ -1,8 +1,8 @@
 import * as React from 'react';
 import joystream from './joystream.svg';
 import './App.css';
-import { getValidatorStatistics } from './get-status';
-import { Button, Container, Grid, TextField, withStyles } from '@material-ui/core';
+import { getValidatorStatistics, getChainState } from './get-status';
+import { Box, Button, Container, Grid, LinearProgress, LinearProgressProps, TextField, Typography, withStyles } from '@material-ui/core';
 import { DataGrid, ColDef } from '@material-ui/data-grid';
 import { ActiveEra } from './joyApi';
 
@@ -17,6 +17,14 @@ interface IState {
   startBlock: number,
   endBlock: number,
   isLoading: boolean,
+  lastBlock: number,
+  currentBlock: number,
+  timerId?: NodeJS.Timeout,
+  progress: {
+    value: number,
+    min: number,
+    max: number,
+  }
 }
 
 class App extends React.Component<IProps, IState> {
@@ -36,11 +44,34 @@ class App extends React.Component<IProps, IState> {
       startBlock: 1069639,
       endBlock: 1270177,
       isLoading: false,
+      lastBlock: 0,
+      currentBlock: 0,
+      progress: {
+        value: 0,
+        min: 0,
+        max: 0
+      }
     };
     this.getStatus = this.getStatus.bind(this);
     this.setStash = this.setStash.bind(this);
     this.setBlockStart = this.setBlockStart.bind(this);
     this.setBlockEnd = this.setBlockEnd.bind(this);
+  }
+
+  async componentDidMount() {
+    const timerId = setInterval(
+      () => this.updateLastBlock(),
+      10000
+    );
+    this.setState((prevState) => {return {...prevState, timerId}})
+  }
+
+  async updateLastBlock() {
+      const chainState = await getChainState();
+      console.log(chainState)
+      this.setState((prevState) => {
+        return { ...prevState, lastBlock: chainState.finalizedBlockHeight }
+      });
   }
 
   setStash(event: React.ChangeEvent<HTMLInputElement>) {
@@ -72,16 +103,20 @@ class App extends React.Component<IProps, IState> {
       });
       return
     }
+    
     this.setState((prevState) => {return { ...prevState, isLoading: true, rows: [] }});
 
     if (startBlock < endBlock) {
       for (let blockHeight = startBlock; blockHeight <= endBlock; blockHeight += 1) {
         if (this.state.shouldStop) {
           this.setState((prevState) => {
-            return { ...prevState, shouldStop: false }
+            return { ...prevState, shouldStop: false, progress: {value: 0, min: 0, max: 0} }
           });
           break;
         }
+        this.setState((prevState) => {
+          return { ...prevState, progress: {value: blockHeight, min: startBlock, max: endBlock} }
+        });
         let result = await getValidatorStatistics(stash, blockHeight);
         if (result && result.status && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
@@ -93,10 +128,13 @@ class App extends React.Component<IProps, IState> {
       for (let blockHeight = startBlock; blockHeight >= endBlock; blockHeight -= 1) {
         if (this.state.shouldStop) {
           this.setState((prevState) => {
-            return { ...prevState, shouldStop: false }
+            return { ...prevState, shouldStop: false, progress: {value: 0, min: 0, max: 0} }
           });
           break;
         }
+        this.setState((prevState) => {
+          return { ...prevState, progress: {value: blockHeight, min: startBlock, max: endBlock} }
+        });
         let result = await getValidatorStatistics(stash, blockHeight);
         if (result && result.status && this.state.rows.indexOf(result.status) < 0) {
           this.setState((prevState) => {
@@ -127,11 +165,12 @@ class App extends React.Component<IProps, IState> {
               <TextField onChange={this.setBlockStart} fullWidth id="block-start" label="Start Block" value={this.state.startBlock} variant="filled" />
             </Grid>
             <Grid container item lg={12}>
-              <TextField onChange={this.setBlockEnd} fullWidth id="block-end" label="End Block" value={this.state.endBlock} variant="filled" />
+              <TextField onChange={this.setBlockEnd} fullWidth id="block-end" label={this.state.lastBlock > 0 ? `End Block (Last block: ${this.state.lastBlock})` : 'End Block'} value={this.state.endBlock} variant="filled" />
             </Grid>
             <Grid container item lg={12}>
               <BootstrapButton fullWidth onClick={this.getStatus} color="primary">{this.state.isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
             </Grid>
+            {LinearProgressWithLabel(this.state.progress)}
             <div style={{ height: 600, width: '98%' }}>
               <DataGrid rows={this.state.rows} columns={this.state.columns} pageSize={50} />
             </div>
@@ -143,6 +182,29 @@ class App extends React.Component<IProps, IState> {
 }
 
 export default App;
+
+function normalise(value: number, min: number, max: number) {
+  return (value - min) * 100 / (max - min);
+}
+
+function LinearProgressWithLabel(props: LinearProgressProps & { value: number, min: number, max: number }) {
+  return props.value > 0 ? (
+    <Grid container item lg={12}>
+    <div style={{ width: '100%' }}>
+      <Box display="flex" alignItems="center">
+        <Box width="89%" mr={1}>
+          <LinearProgress variant="determinate" value={normalise(props.value, props.min, props.max)} />
+        </Box>
+        <Box minWidth={35} style={{whiteSpace: "nowrap"}}>
+          <Typography variant="body2" color="textSecondary">
+            {`${Math.round(normalise(props.value, props.min, props.max))}% (${props.value}/${props.max})`}
+          </Typography>
+        </Box>
+      </Box>
+    </div>
+    </Grid>
+  ) : null;
+}
 
 const BootstrapButton = withStyles({
   root: {

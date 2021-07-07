@@ -3,14 +3,14 @@ import { PromiseAllObj } from "./utils";
 
 const api = new JoyApi('wss://rome-rpc-endpoint.joystream.org:9944/');
 
-export async function getChainStatus() {
+export async function getChainState() {
   await api.init;
 
   const status = await PromiseAllObj({
-    totalIssuance: await api.totalIssuance(),
-    system: await api.systemData(),
+    // totalIssuance: await api.totalIssuance(),
+    // system: await api.systemData(),
     finalizedBlockHeight: await api.finalizedBlockHeight(),
-    validators: await api.validatorsData()
+    // validators: await api.validatorsData()
   });
 
   return status;
