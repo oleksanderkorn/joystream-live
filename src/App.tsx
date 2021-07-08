@@ -127,11 +127,11 @@ class App extends React.Component<IProps, IState> {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
-          if (blockHeight.toString() === endBlock.toString()) {
-            this.setState((prevState) => {
-              return { ...prevState, isLoading: false}
-            });
-          }
+        }
+        if (blockHeight.toString() === endBlock.toString()) {
+          this.setState((prevState) => {
+            return { ...prevState, isLoading: false}
+          });
         }
       }
     } else {
@@ -150,11 +150,11 @@ class App extends React.Component<IProps, IState> {
           this.setState((prevState) => {
             return { ...prevState, rows: [...this.state.rows, result.status] }
           });
-          if (blockHeight.toString() === endBlock.toString()) {
-            this.setState((prevState) => {
-              return { ...prevState, isLoading: false}
-            });
-          }
+        }
+        if (blockHeight.toString() === endBlock.toString()) {
+          this.setState((prevState) => {
+            return { ...prevState, isLoading: false}
+          });
         }
       }
     }
