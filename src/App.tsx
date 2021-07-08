@@ -7,6 +7,9 @@ import { DataGrid } from '@material-ui/data-grid';
 import { BootstrapButton } from './BootstrapButton';
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { IState, IProps } from './Types';
+import Autocomplete, { AutocompleteChangeDetails } from '@material-ui/lab/Autocomplete';
+import { ChangeEvent, FocusEventHandler } from 'react';
+import { AutocompleteChangeReason } from '@material-ui/lab';
 
 class App extends React.Component<IProps, IState> {
   constructor(props: {}) {
@@ -31,18 +34,21 @@ class App extends React.Component<IProps, IState> {
         value: 0,
         min: 0,
         max: 0
-      }
+      },
+      activeValidators: [],
     };
     this.fetchBlocksData = this.fetchBlocksData.bind(this);
     this.setStash = this.setStash.bind(this);
+    this.setStashOnBlur = this.setStashOnBlur.bind(this);
     this.setBlockStart = this.setBlockStart.bind(this);
     this.setBlockEnd = this.setBlockEnd.bind(this);
   }
 
   async componentDidMount() {
+    this.updateBasedOnChainState()
     const timerId = setInterval(
-      () => this.updateLastBlock(),
-      7000
+      () => this.updateBasedOnChainState(),
+      10000
     );
     this.setState((prevState) => { return { ...prevState, timerId } })
   }
@@ -53,16 +59,22 @@ class App extends React.Component<IProps, IState> {
     }
   }
 
-  async updateLastBlock() {
+  async updateBasedOnChainState() {
     const chainState = await getChainState();
     this.setState((prevState) => {
-      return { ...prevState, lastBlock: chainState.finalizedBlockHeight }
+      return { ...prevState, lastBlock: chainState.finalizedBlockHeight, activeValidators: chainState.validators.validators }
     });
   }
 
-  setStash(event: React.ChangeEvent<HTMLInputElement>) {
+  setStash(event: ChangeEvent<{}>, value: string | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<string> | undefined) {
     this.setState((prevState) => {
-      return { ...prevState, stash: event.target.value }
+      return { ...prevState, stash: value || '' }
+    });
+  }
+
+  setStashOnBlur(event: FocusEventHandler<HTMLDivElement>) {
+    this.setState((prevState) => {
+      // return { ...prevState, stash: event || '' }
     });
   }
 
@@ -160,16 +172,23 @@ class App extends React.Component<IProps, IState> {
             <Grid container item lg={12}></Grid>
             <img src={joystream} className="App-logo" alt="Joystream logo" />
             <Grid container item lg={12}>
-              <TextField onChange={this.setStash} fullWidth id="stash" label="Stash" value={this.state.stash} variant="filled" />
+              <Autocomplete
+                freeSolo
+                style={{ width: '100%' }}
+                options={this.state.activeValidators}
+                onChange={this.setStash}
+                value={this.state.stash}
+                // onBlur={this.setStashOnBlur}
+                renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled"/>} />
             </Grid>
             <Grid container item lg={12}>
-              <TextField onChange={this.setBlockStart} fullWidth id="block-start" label="Start Block" value={this.state.startBlock} variant="filled" />
+              <TextField type="number" onChange={this.setBlockStart} fullWidth id="block-start" label="Start Block" value={this.state.startBlock} variant="filled" />
             </Grid>
             <Grid container item lg={12}>
-              <TextField onChange={this.setBlockEnd} fullWidth id="block-end" label={this.state.lastBlock > 0 ? `End Block (Last block: ${this.state.lastBlock})` : 'End Block'} value={this.state.endBlock} variant="filled" />
+              <TextField type="number" onChange={this.setBlockEnd} fullWidth id="block-end" label={this.state.lastBlock > 0 ? `End Block (Last block: ${this.state.lastBlock})` : 'End Block'} value={this.state.endBlock} variant="filled" />
             </Grid>
             <Grid container item lg={12}>
-              <BootstrapButton fullWidth onClick={this.fetchBlocksData} color="primary">{this.state.isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
+              <BootstrapButton disabled={!this.state.stash} fullWidth onClick={this.fetchBlocksData} color="primary">{this.state.isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
             </Grid>
             {LinearProgressWithLabel(this.state.progress)}
             <div style={{ height: 600, width: '98%' }}>

@@ -9,6 +9,7 @@ export interface IState {
   activeEras: ActiveEra[];
   columns: ColDef[];
   stash: string;
+  activeValidators: string[];
   startBlock: number;
   endBlock: number;
   isLoading: boolean;

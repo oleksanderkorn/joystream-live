@@ -23,7 +23,7 @@ export class JoyApi {
   api!: ApiPromise;
 
   constructor(endpoint?: string) {
-    const wsEndpoint = endpoint || process.env.PROVIDER || "ws://127.0.0.1:9944";
+    const wsEndpoint = endpoint || process.env.REACT_APP_WS_PROVIDER || "ws://127.0.0.1:9944";
     this.endpoint = wsEndpoint;
     this.isReady = (async () => {
       const api = await new ApiPromise({ provider: new WsProvider(wsEndpoint), types })
@@ -73,60 +73,8 @@ export class JoyApi {
     return number.toNumber();
   }
 
-
-  async getActiveEras(address: string) {
-    const stash = address || '5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW';
-    const blockStart = 1069639;
-    const startHash = (await this.api.rpc.chain.getBlockHash(blockStart));
-    log(`Start Hash [${startHash}]`);
-    const startEra = (await this.api.query.staking.activeEra.at(startHash)).unwrap().index.toNumber();
-    log(`Start Era [${startEra}]`);
-    const startTimestamp = new Date((await this.api.query.timestamp.now.at(startHash)).toNumber()).toISOString();
-    log(`Start Date [${startTimestamp}]`);
-    const blockEnd = 1270177;
-    const endHash = (await this.api.rpc.chain.getBlockHash(blockEnd));
-    log(`End Hash [${endHash}]`);
-    const endEra = (await this.api.query.staking.activeEra.at(endHash)).unwrap().index.toNumber();
-    log(`End Era [${endEra}]`);
-    const endTimestamp = new Date((await this.api.query.timestamp.now.at(endHash)).toNumber()).toISOString();
-    log(`End Date [${endTimestamp}]`);
-
-    let activeEras: number[] = [];
-    for (let blockHeight = blockStart; blockHeight < blockEnd; blockHeight += 1) {
-      const blockHash = (await this.api.rpc.chain.getBlockHash(blockHeight));
-      log(`Block Hash [${startHash}]`);
-      const blockEra = (await this.api.query.staking.activeEra.at(blockHash)).unwrap().index.toNumber();
-      log(`Block Era [${blockEra}]`);
-      const blockTimestamp = new Date((await this.api.query.timestamp.now.at(blockHash)).toNumber()).toISOString();
-      log(`Block Date [${blockTimestamp}]`);  
-      const eraPoints = await this.api.query.staking.erasRewardPoints.at(blockHash, blockEra)
-      log(`Era Points [${eraPoints}]`);
-      eraPoints.individual.forEach((points, author) => {
-        log(`Author Points [${author}]`);
-        log(`Individual Points [${points}]`);
-        if (author.toString() === stash) {
-          // const pn = Number(points.toBigInt())
-          // const activeEra = {
-          //   era: blockEra,
-          //   block: blockHeight,
-          //   date: blockTimestamp,
-          //   points: pn
-          // }
-          const activeEra = blockEra
-          if (activeEras.indexOf(activeEra) < 0) {
-            activeEras.push(activeEra)
-            log(`Era [${blockEra}], Date [${blockTimestamp}]`); //, Points [${pn}]
-          }
-        }
-      });
-    }
-    return {
-      activeEras
-    }
-  }
-
   async getActiveErasForBlock(address: string, blockStart: number) {
-    const stash = address || '5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW';
+    const stash = address;
     const startHash = (await this.api.rpc.chain.getBlockHash(blockStart));
     const startEra = (await this.api.query.staking.activeEra.at(startHash)).unwrap().index.toNumber();
     const startTimestamp = new Date((await this.api.query.timestamp.now.at(startHash)).toNumber()).toISOString();
