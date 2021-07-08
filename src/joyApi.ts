@@ -5,17 +5,9 @@ import { config } from "dotenv";
 import BN from "bn.js";
 import { Option, Vec } from "@polkadot/types";
 import { log } from "./debug"
+import { ActiveEra } from "./Types";
 
 config();
-
-export interface ActiveEra {
-  id: number,
-  era: number,
-  hash: string,
-  block: number,
-  date: string,
-  points: number
-}
 
 export class JoyApi {
   endpoint: string;
@@ -48,18 +40,18 @@ export class JoyApi {
   }
 
   async systemData() {
-    const [chain, nodeName, nodeVersion, peers] = await Promise.all([
+    const [chain, nodeName, nodeVersion] = await Promise.all([
       this.api.rpc.system.chain(),
       this.api.rpc.system.name(),
       this.api.rpc.system.version(),
-      this.api.rpc.system.peers(),
+      // this.api.rpc.system.peers(),
     ]);
 
     return {
       chain: chain.toString(),
       nodeName: nodeName.toString(),
       nodeVersion: nodeVersion.toString(),
-      peerCount: peers.length,
+      // peerCount: peers.length,
     };
   }
 
@@ -73,7 +65,7 @@ export class JoyApi {
     return number.toNumber();
   }
 
-  async getActiveErasForBlock(address: string, blockStart: number) {
+  async getActiveErasForBlock(address: string, blockStart: number): Promise<ActiveEra[] | undefined> {
     const stash = address;
     const startHash = (await this.api.rpc.chain.getBlockHash(blockStart));
     const startEra = (await this.api.query.staking.activeEra.at(startHash)).unwrap().index.toNumber();

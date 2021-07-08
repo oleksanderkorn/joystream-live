@@ -1,24 +1,12 @@
-import { ColDef } from '@material-ui/data-grid';
-import { ActiveEra } from './joyApi';
-
-export interface IProps {
+export interface EraStatus {
+  status: ActiveEra;
 }
 
-export interface IState {
-  shouldStop: boolean;
-  activeEras: ActiveEra[];
-  columns: ColDef[];
-  stash: string;
-  activeValidators: string[];
-  startBlock: number;
-  endBlock: number;
-  isLoading: boolean;
-  lastBlock: number;
-  currentBlock: number;
-  timerId?: NodeJS.Timeout;
-  progress: {
-    value: number;
-    min: number;
-    max: number;
-  };
+export interface ActiveEra {
+  id: number,
+  era: number,
+  hash: string,
+  block: number,
+  date: string,
+  points: number
 }
