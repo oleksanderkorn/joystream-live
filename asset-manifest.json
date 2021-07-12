@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/joystream-live/static/css/main.7eef200d.chunk.css",
-    "main.js": "/joystream-live/static/js/main.031ebbdd.chunk.js",
-    "main.js.map": "/joystream-live/static/js/main.031ebbdd.chunk.js.map",
+    "main.js": "/joystream-live/static/js/main.96c1fe77.chunk.js",
+    "main.js.map": "/joystream-live/static/js/main.96c1fe77.chunk.js.map",
     "runtime-main.js": "/joystream-live/static/js/runtime-main.967c41ae.js",
     "runtime-main.js.map": "/joystream-live/static/js/runtime-main.967c41ae.js.map",
     "static/js/2.b06bdc99.chunk.js": "/joystream-live/static/js/2.b06bdc99.chunk.js",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.967c41ae.js",
     "static/js/2.b06bdc99.chunk.js",
     "static/css/main.7eef200d.chunk.css",
-    "static/js/main.031ebbdd.chunk.js"
+    "static/js/main.96c1fe77.chunk.js"
   ]
 }
