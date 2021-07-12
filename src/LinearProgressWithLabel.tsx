@@ -1,7 +1,7 @@
 import { Box, Grid, LinearProgress, LinearProgressProps, Typography } from '@material-ui/core';
 
 export function normalise(value: number, min: number, max: number) {
-  return (value - min) * 100 / (max - min);
+  return (Number(value) - Number(min)) * 100 / (Number(max) - Number(min));
 }
 
 export function LinearProgressWithLabel(props: LinearProgressProps & { value: number; min: number; max: number; }) {

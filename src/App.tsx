@@ -23,8 +23,8 @@ const JoystreamApp = () => {
     ]
   );
   const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');
-  const [startBlock, setStartBlock] = useState(1270157); //1069639
-  const [endBlock, setEndBlock] = useState(1270177);
+  const [startBlock, setStartBlock] = useState(1274283);
+  const [endBlock, setEndBlock] = useState(1274383);
   const [isLoading, setIsLoading] = useState(false);
   const [lastBlock, setLastBlock] = useState(0);
   const [progress, setProgress] = useState({
@@ -49,7 +49,7 @@ const JoystreamApp = () => {
   const fetchBlocksData = async () => {
     resetDataBeforeLoading();
     if (startBlock < endBlock) {
-      for (let blockHeight = startBlock; blockHeight <= endBlock; blockHeight += 1) {
+      for (let blockHeight = Number(startBlock); blockHeight <= Number(endBlock); blockHeight += 1) {
         let shouldStopLoading = false
         setShouldStop(prev => {
           shouldStopLoading = prev
@@ -59,10 +59,10 @@ const JoystreamApp = () => {
           resetProgress();
           break;
         }
-        await fetchBlockData(blockHeight);
+        await fetchBlockData(Number(blockHeight));
       }
     } else {
-      for (let blockHeight = startBlock; blockHeight >= endBlock; blockHeight -= 1) {
+      for (let blockHeight = Number(startBlock); blockHeight >= Number(endBlock); blockHeight -= 1) {
         let shouldStopLoading = false
         setShouldStop(prev => {
           shouldStopLoading = prev
@@ -72,7 +72,7 @@ const JoystreamApp = () => {
           resetProgress();
           break;
         }
-        await fetchBlockData(blockHeight);
+        await fetchBlockData(Number(blockHeight));
       }
     }
   }
