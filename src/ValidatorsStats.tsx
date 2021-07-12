@@ -28,10 +28,7 @@ export const ValidatorsStats = (props: { stash: String, activeEras: ActiveEra[];
     sortedByBlock = props.activeEras.sort((e1,e2) => e1.block - e2.block)
     firstBlock = sortedByBlock[0];
     lastBlock = sortedByBlock[sortedByBlock.length - 1];
-    scoringPeriodText = `
-    Validator Date: ${new Date(firstBlock!.date).toLocaleDateString()}-${new Date(lastBlock!.date).toLocaleDateString()}
-    Description: I was an active validator from era/block ${firstBlock!.era}/${firstBlock!.block} to era/block ${lastBlock!.era}/${lastBlock!.block} with stash account ${props.stash}
-    `
+    scoringPeriodText = `Validator Date: ${new Date(firstBlock!.date).toLocaleDateString()}-${new Date(lastBlock!.date).toLocaleDateString()}\nDescription: I was an active validator from era/block ${firstBlock!.era}/${firstBlock!.block} to era/block ${lastBlock!.era}/${lastBlock!.block}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ? blocks)`
     return (
       <Grid container item lg={12}>
         <Card className={classes.root}>
@@ -40,7 +37,7 @@ export const ValidatorsStats = (props: { stash: String, activeEras: ActiveEra[];
               Scoring period text:
             </Typography>
             <Typography className={classes.pos} color="textSecondary">
-              { scoringPeriodText }
+              { scoringPeriodText.split('\n').map((i) => <div>{i}</div>) }
             </Typography>
           </CardContent>
           <CardActions>
