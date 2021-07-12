@@ -68,7 +68,7 @@ const JoystreamApp = () => {
 
   const startingBlockHeight = () => {
     if (Number(startBlock) < Number(endBlock)) {
-      return searchOptimized ? Number(startBlock) - 600 : Number(startBlock)
+      return searchOptimized ? (Number(startBlock) - 600 < 0) ? 0 : Number(startBlock) - 600 : Number(startBlock)
     }
     return searchOptimized ? Number(startBlock) + 600 : Number(startBlock)
   }
