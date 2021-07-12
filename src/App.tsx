@@ -8,6 +8,7 @@ import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { ActiveEra } from './Types';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
+import { ValidatorsStats } from './ValidatorsStats';
 
 const JoystreamApp = () => {
   const [shouldStop, setShouldStop] = useState(false);
@@ -35,9 +36,9 @@ const JoystreamApp = () => {
 
   useEffect(() => {
     updateChainState()
-    const interval = setInterval(() => updateChainState(), 10000);
+    const interval = setInterval(() => { updateChainState() }, 10000);
     return () => clearInterval(interval);
-  });
+  }, []);
 
   const updateChainState = async () => {
     const chainState = await getChainState();
@@ -140,11 +141,10 @@ const JoystreamApp = () => {
               renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
           </Grid>
           <Grid container item lg={12}>
-            <TextField type="number" onChange={updateStartBlock} fullWidth id="block-start" label="Start Block" value={startBlock} variant="filled" />
+            <TextField type="number" onChange={updateStartBlock} style={{ width: '49%', marginRight: '24px' }} id="block-start" label="Start Block" value={startBlock} variant="filled" />
+            <TextField type="number" onChange={updateEndblock} style={{ width: '49%' }} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
           </Grid>
-          <Grid container item lg={12}>
-            <TextField type="number" onChange={updateEndblock} fullWidth id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
-          </Grid>
+          <ValidatorsStats stash={stash} activeEras={activeEras} />
           <Grid container item lg={12}>
             <BootstrapButton disabled={shouldDisableButton} fullWidth onClick={startOrStopLoading} color="primary">{isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
           </Grid>
