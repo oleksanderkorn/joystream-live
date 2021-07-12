@@ -1,7 +1,7 @@
 import joystream from './joystream.svg';
 import './App.css';
 import { getValidatorStatistics, getChainState } from './get-status';
-import { Container, Grid, TextField } from '@material-ui/core';
+import { Container, FormControlLabel, Grid, Switch, TextField } from '@material-ui/core';
 import { ColDef, DataGrid } from '@material-ui/data-grid';
 import { BootstrapButton } from './BootstrapButton';
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
@@ -12,6 +12,7 @@ import { ValidatorsStats } from './ValidatorsStats';
 
 const JoystreamApp = () => {
   const [shouldStop, setShouldStop] = useState(false);
+  const [searchOptimized, setSearchOptimized] = useState(true);
   const [activeEras, setActiveEras] = useState([] as ActiveEra[]);
   const [columns] = useState(
     [
@@ -45,34 +46,49 @@ const JoystreamApp = () => {
     setLastBlock(chainState.finalizedBlockHeight)
     setActiveValidators(chainState.validators.validators)
   }
+  const nextBlockHeight = (currentBlock: number, isValidInCurrentEra: boolean) => {
+    if (Number(startBlock) < Number(endBlock)) {
+      if (searchOptimized && isValidInCurrentEra) {
+        if ((currentBlock + 600) < Number(endBlock)) {
+          return currentBlock + 600
+        }
+        return Number(endBlock)
+      }
+      return searchOptimized ? currentBlock + 10 : currentBlock + 1;
+    } else {
+      if (searchOptimized && isValidInCurrentEra) {
+        if ((currentBlock - 600) < Number(endBlock)) {
+          return currentBlock - 600
+        }
+        return Number(endBlock)
+      }
+      return searchOptimized ? currentBlock - 10 : currentBlock - 1;
+    }
+  }
 
+  const startingBlockHeight = () => {
+    if (Number(startBlock) < Number(endBlock)) {
+      return searchOptimized ? Number(startBlock) - 600 : Number(startBlock)
+    }
+    return searchOptimized ? Number(startBlock) + 600 : Number(startBlock)
+  }
+  
   const fetchBlocksData = async () => {
     resetDataBeforeLoading();
-    if (startBlock < endBlock) {
-      for (let blockHeight = Number(startBlock); blockHeight <= Number(endBlock); blockHeight += 1) {
-        let shouldStopLoading = false
-        setShouldStop(prev => {
-          shouldStopLoading = prev
-          return prev
-        })
-        if (shouldStopLoading) {
-          resetProgress();
-          break;
-        }
-        await fetchBlockData(Number(blockHeight));
+    let isValidInCurrentEra = false
+    for (let blockHeight = startingBlockHeight(); ; blockHeight = nextBlockHeight(blockHeight, isValidInCurrentEra)) {
+      let shouldStopLoading = false
+      setShouldStop(prev => {
+        shouldStopLoading = prev
+        return shouldStopLoading
+      })
+      if (shouldStopLoading) {
+        resetProgress();
+        break;
       }
-    } else {
-      for (let blockHeight = Number(startBlock); blockHeight >= Number(endBlock); blockHeight -= 1) {
-        let shouldStopLoading = false
-        setShouldStop(prev => {
-          shouldStopLoading = prev
-          return prev
-        })
-        if (shouldStopLoading) {
-          resetProgress();
-          break;
-        }
-        await fetchBlockData(Number(blockHeight));
+      isValidInCurrentEra = await fetchBlockData(Number(blockHeight));
+      if (blockHeight === Number(endBlock)) {
+        stopFetchingBlocksData()
       }
     }
   }
@@ -86,16 +102,19 @@ const JoystreamApp = () => {
 
   const resetProgress = () => {
     setShouldStop(false)
+    setIsLoading(false)
     setProgress({ value: 0, min: 0, max: 0 })
   }
 
-  const fetchBlockData = async (blockHeight: number) => {
-    updateProgress(blockHeight, );
+  const fetchBlockData = async (blockHeight: number): Promise<boolean> => {
+    updateProgress(blockHeight);
     let result = await getValidatorStatistics(stash, blockHeight);
-    if (result && result.status && activeEras.indexOf(result.status) < 0) {
+    const isActiveBlock = result && result.status && activeEras.indexOf(result.status) < 0;
+    if (isActiveBlock) {
       setActiveEras((prevEras) => [...prevEras, result.status])
     }
     stopLoadingOnLastBlock(blockHeight);
+    return isActiveBlock
   }
 
   const stopLoadingOnLastBlock = (blockHeight: number) => {
@@ -105,7 +124,7 @@ const JoystreamApp = () => {
   }
 
   const updateProgress = (blockHeight: number) => {
-    setProgress({ value: blockHeight, min: startBlock, max: endBlock })
+    setProgress({ value: blockHeight, min: (searchOptimized ? startBlock - 600 : startBlock), max: endBlock })
   }
 
   const resetDataBeforeLoading = () => {
@@ -119,6 +138,8 @@ const JoystreamApp = () => {
   const updateStartBlock = (e: { target: { value: unknown; }; }) => setStartBlock((e.target.value as unknown as number));
   const updateEndblock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
   const startOrStopLoading = () => isLoading ? stopFetchingBlocksData() : fetchBlocksData();
+  const updateSearchOptimized = (event: React.ChangeEvent<HTMLInputElement>) => setSearchOptimized(event.target.checked);
+
   return (
     <div className="App" >
       <Container maxWidth="lg">
@@ -141,8 +162,21 @@ const JoystreamApp = () => {
               renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
           </Grid>
           <Grid container item lg={12}>
-            <TextField type="number" onChange={updateStartBlock} style={{ width: '49%', marginRight: '24px' }} id="block-start" label="Start Block" value={startBlock} variant="filled" />
-            <TextField type="number" onChange={updateEndblock} style={{ width: '49%' }} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
+            <TextField type="number" onChange={updateStartBlock} style={{ width: '44%', marginRight: '14px' }} id="block-start" label="Start Block" value={startBlock} variant="filled" />
+            <FormControlLabel
+              style={{ width: '110px', marginRight: '20px'}}
+              control={
+                <Switch
+                  checked={searchOptimized}
+                  onChange={updateSearchOptimized}
+                  name="searchOptimized"
+                  color="primary"
+                />
+              }
+              disabled={isLoading}
+              label={searchOptimized ? "Optimized search": "Full search"}
+            />
+            <TextField type="number" onChange={updateEndblock} style={{ width: '44%', marginLeft: '14px'}} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
           </Grid>
           <ValidatorsStats stash={stash} activeEras={activeEras} />
           <Grid container item lg={12}>
