@@ -1,7 +1,7 @@
 import './App.css';
 import { getChainState } from './get-status';
 import moment from 'moment'
-import { Button, Card, CardActions, CardContent, Container, createStyles, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, CircularProgress, Container, createStyles, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
 import { BootstrapButton } from './BootstrapButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
@@ -82,10 +82,10 @@ const ValidatorReport = () => {
         axios.get(apiUrl).then((response) => {
             setReport(response.data);
             setIsLoading(false)
+            setError(undefined)
         }).catch((err) => {
             setIsLoading(false)
             setError(err)
-            console.log(err)
         })
     }
 
@@ -102,7 +102,7 @@ const ValidatorReport = () => {
 
     const getButtonTitle = (isLoading: boolean) => {
         if (isLoading) {
-            return 'Stop loading'
+            return (<div style={{ display: 'flex', alignItems: 'center' }}>Stop loading <CircularProgress style={ { color: '#fff', height: 20, width: 20, marginLeft: 12 } } /></div>)
         }
         if (startBlock && endBlock) {
             return `Load data between blocks ${startBlock} - ${endBlock}`
