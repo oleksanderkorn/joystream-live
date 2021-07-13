@@ -9,6 +9,7 @@ import axios from 'axios'
 import { config } from "dotenv";
 import { Report, Reports } from './Types';
 import { ColDef, DataGrid, PageChangeParams } from '@material-ui/data-grid';
+import Alert from '@material-ui/lab/Alert';
 
 config();
 
@@ -30,6 +31,7 @@ const ValidatorReport = () => {
     const [startBlock, setStartBlock] = useState('' as unknown as number);
     const [endBlock, setEndBlock] = useState('' as unknown as number);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(undefined);
     const [columns] = useState(
         [
             { field: 'eraId', headerName: 'Era', sortable: true },
@@ -77,9 +79,14 @@ const ValidatorReport = () => {
         const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
         const dateParam = dateFrom && dateTo ? `&start_time=${dateFrom}&end_time=${dateTo}` : ''
         const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
-        const result = await axios.get(apiUrl)
-        setReport(result.data);
-        setIsLoading(false)
+        axios.get(apiUrl).then((response) => {
+            setReport(response.data);
+            setIsLoading(false)
+        }).catch((err) => {
+            setIsLoading(false)
+            setError(err)
+            console.log(err)
+        })
     }
 
     const stopLoadingReport = () => {
@@ -148,6 +155,7 @@ const ValidatorReport = () => {
                     </Grid>
                     <Grid item lg={12}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
+                        <Alert style={ error !== undefined ? { marginTop: 12 } : { display: 'none'} } onClose={() => setError(undefined)} severity="error">Error loading validator report, please try again.</Alert>
                     </Grid>
                     <Grid item lg={12}>
                         <ValidatorReportCard stash={stash} report={report} />
