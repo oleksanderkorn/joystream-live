@@ -10,3 +10,13 @@ export interface ActiveEra {
   date: string,
   points: number
 }
+
+export interface Report { 
+  eraId: number,
+  stakeTotal: number,
+  stakeOwn: number,
+  points: number,
+  rewards: number,
+  commission: number,
+  blocksCount: number
+}

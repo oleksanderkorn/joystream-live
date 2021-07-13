@@ -1,4 +1,4 @@
-import { Box, Grid, LinearProgress, LinearProgressProps, Typography } from '@material-ui/core';
+import { Box, LinearProgress, LinearProgressProps, Typography } from '@material-ui/core';
 
 export function normalise(value: number, min: number, max: number) {
   return (Number(value) - Number(min)) * 100 / (Number(max) - Number(min));
@@ -6,7 +6,6 @@ export function normalise(value: number, min: number, max: number) {
 
 export function LinearProgressWithLabel(props: LinearProgressProps & { value: number; min: number; max: number; }) {
   return props.value > 0 ? (
-    <Grid container item lg={12}>
       <div style={{ width: '98%' }}>
         <Box display="flex" alignItems="center">
           <Box width="100%" mr={1}>
@@ -19,6 +18,5 @@ export function LinearProgressWithLabel(props: LinearProgressProps & { value: nu
           </Box>
         </Box>
       </div>
-    </Grid>
   ) : null;
 }
