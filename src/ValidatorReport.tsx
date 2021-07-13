@@ -6,7 +6,8 @@ import { BootstrapButton } from './BootstrapButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
 import axios from 'axios'
-import { Report } from './Types';
+import { Report, Reports } from './Types';
+import { ColDef, DataGrid } from '@material-ui/data-grid';
 
 
 const useStyles = makeStyles(() =>
@@ -26,11 +27,29 @@ const ValidatorReport = () => {
     const [startBlock, setStartBlock] = useState('' as unknown as number);
     const [endBlock, setEndBlock] = useState('' as unknown as number);
     const [isLoading, setIsLoading] = useState(false);
+    const [columns] = useState(
+        [
+            { field: 'eraId', headerName: 'Era', sortable: true },
+            { field: 'stakeTotal', headerName: 'Total Stake', width: 150, sortable: true },
+            { field: 'stakeOwn', headerName: 'Own Stake', width: 150, sortable: true },
+            { field: 'points', headerName: 'Points', width: 150, sortable: true },
+            { field: 'rewards', headerName: 'Rewards', width: 150, sortable: false },
+            { field: 'commission', headerName: 'Commission', width: 150, sortable: false },
+            { field: 'blocksCount', headerName: 'Blocks Produced', width: 150, sortable: false },
+        ]
+    );
     const [report, setReport] = useState({
         nextPage: false,
         totalCount: 0,
+        totalBlocks: 0,
+        startEra: -1,
+        endEra: -1,
+        startBlock: -1,
+        endBlock: -1,
+        startTime: -1,
+        endTime: -1,
         report: [] as unknown as Report[]
-    });
+    } as unknown as Reports );
 
     useEffect(() => {
         updateChainState()
@@ -123,7 +142,12 @@ const ValidatorReport = () => {
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
                     </Grid>
                     <Grid item lg={12}>
-                        <ValidatorReportCard reports={report.report} />
+                        <ValidatorReportCard stash={stash} report={report} />
+                    </Grid>
+                    <Grid item lg={12}>
+                        <div style={{ height: 600 }}>
+                            <DataGrid rows={report.report} columns={columns as unknown as ColDef[]} pageSize={50} />
+                        </div>
                     </Grid>
                 </Grid>
             </Container>
@@ -131,10 +155,9 @@ const ValidatorReport = () => {
     )
 }
 
-const ValidatorReportCard = (props: { reports: { eraId: number; stakeTotal: number; stakeOwn: number; points: number; rewards: number; commission: number; blocksCount: number; }[] }) => {
-
-    const copyValidatorStatistics = () => navigator.clipboard.writeText('TODO')
-
+const ValidatorReportCard = (props: { stash: string, report: Reports }) => {
+    const copyValidatorStatistics = () => navigator.clipboard.writeText(scoringPeriodText)
+    const [scoringPeriodText, setScoringPeriodText] = useState('')
     const useStyles = makeStyles({
         root: {
             minWidth: '100%',
@@ -150,14 +173,27 @@ const ValidatorReportCard = (props: { reports: { eraId: number; stakeTotal: numb
 
     const classes = useStyles();
 
-    if (props.reports.length > 0) {
+    useEffect(() => {
+        updateScoringPeriodText()
+    });
+
+    const updateScoringPeriodText = () => {
+        if (props.report.report.length > 0) {
+            const report = `Validator Date: ${moment(props.report.startTime).format('DD-MM-yyyy')}-${moment(props.report.startTime).format('DD-MM-yyyy')}\nDescription: I was an active validator from era/block ${props.report.startEra}/${props.report.startBlock} to era/block ${props.report.endEra}/${props.report.endBlock}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ${props.report.totalBlocks} blocks)`
+            setScoringPeriodText(report)
+        } else {
+            setScoringPeriodText('')
+        }
+    }
+
+    if (props.report.report.length > 0) {
         return (<Card className={classes.root}>
             <CardContent>
                 <Typography className={classes.title} color="textPrimary" gutterBottom>
                     Validator Report:
                 </Typography>
                 <Typography className={classes.pos} color="textSecondary">
-                    {props.reports[0] ? props.reports[0].eraId : ''}
+                    {scoringPeriodText}
                 </Typography>
             </CardContent>
             <CardActions>

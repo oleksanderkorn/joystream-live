@@ -15,11 +15,11 @@ const LiveStatsWS = () => {
   const [activeEras, setActiveEras] = useState([] as ActiveEra[]);
   const [columns] = useState(
     [
-      { field: 'era', headerName: 'Era', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'block', headerName: 'Block', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'date', headerName: 'Date', width: 200, sortable: true, headerAlign: 'center' },
-      { field: 'points', headerName: 'Points', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'hash', headerName: 'Block Hash', width: 500, sortable: false, headerAlign: 'center' },
+      { field: 'era', headerName: 'Era', width: 100, sortable: true },
+      { field: 'block', headerName: 'Block', width: 100, sortable: true },
+      { field: 'date', headerName: 'Date', width: 200, sortable: true },
+      { field: 'points', headerName: 'Points', width: 100, sortable: true },
+      { field: 'hash', headerName: 'Block Hash', width: 500, sortable: false },
     ]
   );
   const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');

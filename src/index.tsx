@@ -13,8 +13,8 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
       <div style={{ flexGrow: 1 }}>
-        <AppBar position="static" style={{ flexDirection: 'row' }}>
-          <Toolbar style={{ paddingLeft: '12px' }}>
+        <AppBar position="static" style={{ flexDirection: 'row', backgroundColor: '#4138ff' }}>
+          <Toolbar style={{ paddingLeft: '12px', backgroundColor: '#4138ff' }}>
             <Button color="inherit" component={RouterLink} to="/">
               <img style={{ width: 50, height: 50 }} src={joystream} className="App-logo" alt="Joystream logo" />
             </Button>
