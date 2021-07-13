@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/joystream-live/static/css/main.7eef200d.chunk.css",
-    "main.js": "/joystream-live/static/js/main.680f139d.chunk.js",
-    "main.js.map": "/joystream-live/static/js/main.680f139d.chunk.js.map",
+    "main.js": "/joystream-live/static/js/main.ce7f451d.chunk.js",
+    "main.js.map": "/joystream-live/static/js/main.ce7f451d.chunk.js.map",
     "runtime-main.js": "/joystream-live/static/js/runtime-main.2ee358ed.js",
     "runtime-main.js.map": "/joystream-live/static/js/runtime-main.2ee358ed.js.map",
-    "static/js/2.0dc0b5b6.chunk.js": "/joystream-live/static/js/2.0dc0b5b6.chunk.js",
-    "static/js/2.0dc0b5b6.chunk.js.map": "/joystream-live/static/js/2.0dc0b5b6.chunk.js.map",
+    "static/js/2.7f5c01e2.chunk.js": "/joystream-live/static/js/2.7f5c01e2.chunk.js",
+    "static/js/2.7f5c01e2.chunk.js.map": "/joystream-live/static/js/2.7f5c01e2.chunk.js.map",
     "static/js/3.453b8573.chunk.js": "/joystream-live/static/js/3.453b8573.chunk.js",
     "static/js/3.453b8573.chunk.js.map": "/joystream-live/static/js/3.453b8573.chunk.js.map",
     "index.html": "/joystream-live/index.html",
     "static/css/main.7eef200d.chunk.css.map": "/joystream-live/static/css/main.7eef200d.chunk.css.map",
-    "static/js/2.0dc0b5b6.chunk.js.LICENSE.txt": "/joystream-live/static/js/2.0dc0b5b6.chunk.js.LICENSE.txt",
+    "static/js/2.7f5c01e2.chunk.js.LICENSE.txt": "/joystream-live/static/js/2.7f5c01e2.chunk.js.LICENSE.txt",
     "static/media/joystream.f5df567f.svg": "/joystream-live/static/media/joystream.f5df567f.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.2ee358ed.js",
-    "static/js/2.0dc0b5b6.chunk.js",
+    "static/js/2.7f5c01e2.chunk.js",
     "static/css/main.7eef200d.chunk.css",
-    "static/js/main.680f139d.chunk.js"
+    "static/js/main.ce7f451d.chunk.js"
   ]
 }
