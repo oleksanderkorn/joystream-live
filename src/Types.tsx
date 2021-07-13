@@ -21,7 +21,7 @@ export interface Reports {
   endBlock: number,
   startTime: number,
   endTime: number,
-  report: Report[]
+  report: Array<Report>
 };
 
 export interface Report { 

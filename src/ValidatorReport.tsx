@@ -6,9 +6,11 @@ import { BootstrapButton } from './BootstrapButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
 import axios from 'axios'
+import { config } from "dotenv";
 import { Report, Reports } from './Types';
-import { ColDef, DataGrid } from '@material-ui/data-grid';
+import { ColDef, DataGrid, PageChangeParams } from '@material-ui/data-grid';
 
+config();
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -19,6 +21,7 @@ const useStyles = makeStyles(() =>
 );
 
 const ValidatorReport = () => {
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3500";
     const [activeValidators, setActiveValidators] = useState([]);
     const [lastBlock, setLastBlock] = useState(0);
     const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');
@@ -63,9 +66,17 @@ const ValidatorReport = () => {
         setActiveValidators(chainState.validators.validators)
     }
 
-    const loadReport = async () => {
+    const handlePageChange = (params: PageChangeParams) => {
+        if (report.report.length > 0) {
+            loadReport(params.page)
+        }
+    }
+
+    const loadReport = async (page: number) => {
         setIsLoading(true)
-        const apiUrl = `http://localhost:3500/validators/${stash}`;
+        const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
+        const dateParam = dateFrom && dateTo ? `&start_time=${dateFrom}&end_time=${dateTo}` : ''
+        const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
         const result = await axios.get(apiUrl)
         setReport(result.data);
         setIsLoading(false)
@@ -76,13 +87,10 @@ const ValidatorReport = () => {
     }
 
     const canLoadReport = () => stash && ((startBlock && endBlock) || (dateFrom && dateTo))
-    const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport();
+    const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport(1);
     const updateStartBlock = (e: { target: { value: unknown; }; }) => setStartBlock((e.target.value as unknown as number));
     const updateEndblock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
-    const updateDateFrom = (e: { target: { value: unknown; }; }) => {
-        console.log(e.target.value)
-        setDateFrom((e.target.value as unknown as string))
-    };
+    const updateDateFrom = (e: { target: { value: unknown; }; }) => setDateFrom((e.target.value as unknown as string))
     const updateDateTo = (e: { target: { value: unknown; }; }) => setDateTo((e.target.value as unknown as string));
 
     const getButtonTitle = (isLoading: boolean) => {
@@ -145,8 +153,15 @@ const ValidatorReport = () => {
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
                     <Grid item lg={12}>
-                        <div style={{ height: 600 }}>
-                            <DataGrid rows={report.report} columns={columns as unknown as ColDef[]} pageSize={50} />
+                        <div style={{ height: 300 }}>
+                            <DataGrid 
+                                rows={report.report} 
+                                columns={columns as unknown as ColDef[]}
+                                rowCount={report.totalCount}
+                                paginationMode="server"
+                                onPageChange={handlePageChange} 
+                                pageSize={1} 
+                            />
                         </div>
                     </Grid>
                 </Grid>
