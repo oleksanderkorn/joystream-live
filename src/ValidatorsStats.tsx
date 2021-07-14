@@ -36,9 +36,7 @@ export const ValidatorsStats = (props: { stash: String, activeEras: ActiveEra[];
             <Typography className={classes.title} color="textPrimary" gutterBottom>
               Scoring period text:
             </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              { scoringPeriodText.split('\n').map((i) => <div>{i}</div>) }
-            </Typography>
+            { scoringPeriodText.split('\n').map((i, key) => <Typography key={key} className={classes.pos} color="textSecondary">{i}</Typography>) }
           </CardContent>
           <CardActions>
             <Button onClick={copyValidatorStatistics} size="small">Copy to clipboard</Button>
