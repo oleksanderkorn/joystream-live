@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'
 import { config } from "dotenv";
 import { Report, Reports } from './Types';
-import { ColDef, DataGrid, PageChangeParams } from '@material-ui/data-grid';
+import { ColDef, DataGrid, PageChangeParams, ValueFormatterParams } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
 
 config();
@@ -34,18 +34,22 @@ const ValidatorReport = () => {
     const [error, setError] = useState(undefined);
     const [columns] = useState(
         [
-            { field: 'id', hide: true },
-            { field: 'eraId', headerName: 'Era', width: 150, sortable: true },
+            { field: 'id', headerName: 'Era', width: 150, sortable: true },
             { field: 'stakeTotal', headerName: 'Total Stake', width: 150, sortable: true },
             { field: 'stakeOwn', headerName: 'Own Stake', width: 150, sortable: true },
             { field: 'points', headerName: 'Points', width: 150, sortable: true },
             { field: 'rewards', headerName: 'Rewards', width: 150, sortable: true },
-            { field: 'commission', headerName: 'Commission', width: 150, sortable: true },
+            { field: 'commission', headerName: 'Commission', width: 150, sortable: true, valueFormatter: (params: ValueFormatterParams) => {
+                if (isNaN(params.value as unknown as number)) {
+                    return `${params.value}%`
+                }
+                return `${Number(params.value).toFixed(0)}%`
+            }},
             { field: 'blocksCount', headerName: 'Blocks Produced', width: 150, sortable: true },
         ]
     );
     const [report, setReport] = useState({
-        nextPage: false,
+        pageSize: 0,
         totalCount: 0,
         totalBlocks: 0,
         startEra: -1,
@@ -163,19 +167,21 @@ const ValidatorReport = () => {
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
                     <Grid item lg={12}>
-                    <div style={{ height: 600, width: '100%' }}>
+                    <div style={{ display: 'flex', height: 600 }}>
+                        <div style={{ flexGrow: 1 }}>
                             <DataGrid 
                                 rows={report.report} 
                                 columns={columns as unknown as ColDef[]}
                                 rowCount={report.totalCount}
                                 paginationMode="server"
                                 onPageChange={handlePageChange} 
-                                pageSize={50}
-                                disableSelectionOnClick={true}
+                                pageSize={report.pageSize}
                                 rowsPerPageOptions={[]}
-                                autoHeight={true}
-                            />
+                                disableSelectionOnClick
+                                autoHeight
+                                />
                         </div>
+                    </div>
                     </Grid>
                 </Grid>
             </Container>
@@ -207,7 +213,7 @@ const ValidatorReportCard = (props: { stash: string, report: Reports }) => {
 
     const updateScoringPeriodText = () => {
         if (props.report.report.length > 0) {
-            const report = `Validator Date: ${moment(props.report.startTime).format('DD-MM-yyyy')}-${moment(props.report.startTime).format('DD-MM-yyyy')}\nDescription: I was an active validator from era/block ${props.report.startEra}/${props.report.startBlock} to era/block ${props.report.endEra}/${props.report.endBlock}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ${props.report.totalBlocks} blocks)`
+            const report = `Validator Date: ${moment(props.report.startTime).format('DD-MM-yyyy')} - ${moment(props.report.startTime).format('DD-MM-yyyy')}\nDescription: I was an active validator from era/block ${props.report.startEra}/${props.report.startBlock} to era/block ${props.report.endEra}/${props.report.endBlock}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ${props.report.totalBlocks} blocks)`
             setScoringPeriodText(report)
         } else {
             setScoringPeriodText('')

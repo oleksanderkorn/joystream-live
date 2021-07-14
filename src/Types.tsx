@@ -12,7 +12,7 @@ export interface ActiveEra {
 }
 
 export interface Reports { 
-  nextPage: boolean,
+  pageSize: number,
   totalCount: number,
   totalBlocks: number,
   startEra: number,
@@ -26,7 +26,6 @@ export interface Reports {
 
 export interface Report { 
   id: number,
-  eraId: number,
   stakeTotal: number,
   stakeOwn: number,
   points: number,
