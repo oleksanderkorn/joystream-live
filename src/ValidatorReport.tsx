@@ -167,8 +167,7 @@ const ValidatorReport = () => {
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
                     <Grid item xs={12} lg={12}>
-                    <div style={{ display: 'flex', height: 600 }}>
-                        <div style={{ flexGrow: 1 }}>
+                        <div style={{ height: 600 }}>
                             <DataGrid 
                                 rows={report.report} 
                                 columns={columns as unknown as ColDef[]}
@@ -181,7 +180,6 @@ const ValidatorReport = () => {
                                 autoHeight
                                 />
                         </div>
-                    </div>
                     </Grid>
                 </Grid>
             </Container>

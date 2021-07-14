@@ -145,10 +145,10 @@ const LiveStatsWS = () => {
         container
         spacing={2}
       >
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <h1>Live Stats</h1>
         </Grid>
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <Autocomplete
             fullWidth
             freeSolo
@@ -157,10 +157,10 @@ const LiveStatsWS = () => {
             value={stash}
             renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
         </Grid>
-        <Grid item lg={5}>
+        <Grid item xs={4} lg={5}>
           <TextField fullWidth type="number" onChange={updateStartBlock} id="block-start" label="Start Block" value={startBlock} variant="filled" />
         </Grid>
-        <Grid item lg={2}>
+        <Grid item xs={4} lg={2}>
           <FormControlLabel
             control={
               <Switch
@@ -174,19 +174,19 @@ const LiveStatsWS = () => {
             label={searchOptimized ? "Optimized search" : "Full search"}
           />
         </Grid>
-        <Grid item lg={5}>
+        <Grid item xs={4} lg={5}>
           <TextField fullWidth type="number" onChange={updateEndblock} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
         </Grid>
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <BootstrapButton size='large' style={{ minHeight: 56 }} disabled={shouldDisableButton} fullWidth onClick={startOrStopLoading} color="primary">{isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
         </Grid>
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <LinearProgressWithLabel {...progress} />
         </Grid>
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <ValidatorsStats stash={stash} activeEras={activeEras} />
         </Grid>
-        <Grid item lg={12}>
+        <Grid item xs={12} lg={12}>
           <div style={{ height: 600 }}>
             <DataGrid rows={activeEras} columns={columns as unknown as ColDef[]} pageSize={50} />
           </div>
