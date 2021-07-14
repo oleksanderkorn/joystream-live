@@ -21,13 +21,15 @@ const useStyles = makeStyles(() =>
     }),
 );
 
+
 const ValidatorReport = () => {
+    const dateFormat = 'yyyy-MM-DD';
     const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3500";
     const [activeValidators, setActiveValidators] = useState([]);
     const [lastBlock, setLastBlock] = useState(0);
     const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');
-    const [dateFrom, setDateFrom] = useState(moment().subtract(14, 'd').format('yyyy-MM-DD'));
-    const [dateTo, setDateTo] = useState(moment().format('yyyy-MM-DD'));
+    const [dateFrom, setDateFrom] = useState(moment().subtract(14, 'd').format(dateFormat));
+    const [dateTo, setDateTo] = useState(moment().format(dateFormat));
     const [startBlock, setStartBlock] = useState('' as unknown as number);
     const [endBlock, setEndBlock] = useState('' as unknown as number);
     const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +85,7 @@ const ValidatorReport = () => {
     const loadReport = (page: number) => {
         setIsLoading(true)
         const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
-        const dateParam = dateFrom && dateTo ? `&start_time=${dateFrom}&end_time=${dateTo}` : ''
+        const dateParam = dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).startOf('day').valueOf()}&end_time=${moment(dateTo, dateFormat).endOf('day').valueOf()}` : ''
         const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
         axios.get(apiUrl).then((response) => {
             setReport(response.data);
