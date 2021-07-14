@@ -88,7 +88,9 @@ const ValidatorReport = () => {
         const dateParam = dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).startOf('day').valueOf()}&end_time=${moment(dateTo, dateFormat).endOf('day').valueOf()}` : ''
         const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
         axios.get(apiUrl).then((response) => {
-            setReport(response.data);
+            if (response.data.report !== undefined) {
+                setReport(response.data);
+            }
             setIsLoading(false)
             setError(undefined)
         }).catch((err) => {
