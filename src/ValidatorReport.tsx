@@ -227,7 +227,7 @@ const ValidatorReportCard = (props: { stash: string, report: Reports }) => {
                     Validator Report:
                 </Typography>
                 <Typography className={classes.pos} color="textSecondary">
-                    {scoringPeriodText}
+                    { scoringPeriodText.split('\n').map((i) => <div>{i}</div>) }
                 </Typography>
             </CardContent>
             <CardActions>
