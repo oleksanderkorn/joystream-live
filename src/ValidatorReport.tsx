@@ -34,13 +34,14 @@ const ValidatorReport = () => {
     const [error, setError] = useState(undefined);
     const [columns] = useState(
         [
-            { field: 'eraId', headerName: 'Era', sortable: true },
+            { field: 'id', hide: true },
+            { field: 'eraId', headerName: 'Era', width: 150, sortable: true },
             { field: 'stakeTotal', headerName: 'Total Stake', width: 150, sortable: true },
             { field: 'stakeOwn', headerName: 'Own Stake', width: 150, sortable: true },
             { field: 'points', headerName: 'Points', width: 150, sortable: true },
-            { field: 'rewards', headerName: 'Rewards', width: 150, sortable: false },
-            { field: 'commission', headerName: 'Commission', width: 150, sortable: false },
-            { field: 'blocksCount', headerName: 'Blocks Produced', width: 150, sortable: false },
+            { field: 'rewards', headerName: 'Rewards', width: 150, sortable: true },
+            { field: 'commission', headerName: 'Commission', width: 150, sortable: true },
+            { field: 'blocksCount', headerName: 'Blocks Produced', width: 150, sortable: true },
         ]
     );
     const [report, setReport] = useState({
@@ -62,19 +63,20 @@ const ValidatorReport = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const updateChainState = async () => {
-        const chainState = await getChainState();
-        setLastBlock(chainState.finalizedBlockHeight)
-        setActiveValidators(chainState.validators.validators)
+    const updateChainState = () => {
+        getChainState().then((chainState) => {
+            setLastBlock(chainState.finalizedBlockHeight)
+            setActiveValidators(chainState.validators.validators)
+        })
     }
 
     const handlePageChange = (params: PageChangeParams) => {
-        if (report.report.length > 0) {
+        if (report.totalCount > 0) {
             loadReport(params.page)
         }
     }
 
-    const loadReport = async (page: number) => {
+    const loadReport = (page: number) => {
         setIsLoading(true)
         const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
         const dateParam = dateFrom && dateTo ? `&start_time=${dateFrom}&end_time=${dateTo}` : ''
@@ -161,14 +163,17 @@ const ValidatorReport = () => {
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
                     <Grid item lg={12}>
-                        <div style={{ height: 300 }}>
+                    <div style={{ height: 600, width: '100%' }}>
                             <DataGrid 
                                 rows={report.report} 
                                 columns={columns as unknown as ColDef[]}
                                 rowCount={report.totalCount}
                                 paginationMode="server"
                                 onPageChange={handlePageChange} 
-                                pageSize={1} 
+                                pageSize={50}
+                                disableSelectionOnClick={true}
+                                rowsPerPageOptions={[]}
+                                autoHeight={true}
                             />
                         </div>
                     </Grid>
