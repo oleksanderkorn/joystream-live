@@ -126,7 +126,7 @@ const ValidatorReport = () => {
                     <Grid item lg={12}>
                         <h1>Validator Report</h1>
                     </Grid>
-                    <Grid item lg={12}>
+                    <Grid item xs={12} lg={12}>
                         <Autocomplete
                             freeSolo
                             style={{ width: '100%' }}
@@ -135,38 +135,38 @@ const ValidatorReport = () => {
                             value={stash}
                             renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <TextField fullWidth type="date" onChange={updateDateFrom} id="block-start" InputLabelProps={{ shrink: true }} label="Date From" value={dateFrom} variant="filled" />
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth onClick={() => setDateFrom(moment().subtract(2, 'w').format('yyyy-MM-DD'))}>2 weeks from today</BootstrapButton>
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <TextField fullWidth type="date" onChange={updateDateTo} id="block-end" InputLabelProps={{ shrink: true }} label="Date To" value={dateTo} variant="filled" />
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth onClick={() => setDateTo(moment().format('yyyy-MM-DD'))}>Today</BootstrapButton>
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <TextField fullWidth type="number" onChange={updateStartBlock} id="block-start" label="Start Block" value={startBlock} variant="filled" />
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!lastBlock} onClick={() => setStartBlock(lastBlock - (600 * 24 * 14))}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <TextField fullWidth type="number" onChange={updateEndblock} id="block-end" label="End Block" value={endBlock} variant="filled" />
                     </Grid>
-                    <Grid item lg={3}>
+                    <Grid item xs={6} lg={3}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
                     </Grid>
-                    <Grid item lg={12}>
+                    <Grid item xs={12} lg={12}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
                         <Alert style={ error !== undefined ? { marginTop: 12 } : { display: 'none'} } onClose={() => setError(undefined)} severity="error">Error loading validator report, please try again.</Alert>
                     </Grid>
-                    <Grid item lg={12}>
+                    <Grid item xs={12} lg={12}>
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
-                    <Grid item lg={12}>
+                    <Grid item xs={12} lg={12}>
                     <div style={{ display: 'flex', height: 600 }}>
                         <div style={{ flexGrow: 1 }}>
                             <DataGrid 
