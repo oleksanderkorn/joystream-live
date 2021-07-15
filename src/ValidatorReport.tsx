@@ -85,7 +85,7 @@ const ValidatorReport = () => {
     const loadReport = (page: number) => {
         setIsLoading(true)
         const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
-        const dateParam = dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).format(dateFormat)}&end_time=${moment(dateTo, dateFormat).format(dateFormat)}` : ''
+        const dateParam = !(startBlock && endBlock) && dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).format(dateFormat)}&end_time=${moment(dateTo, dateFormat).format(dateFormat)}` : ''
         const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
         axios.get(apiUrl).then((response) => {
             if (response.data.report !== undefined) {
