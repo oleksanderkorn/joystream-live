@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, makeStyles, Typography } from '@material-ui/core';
 import { ActiveEra } from './Types';
 
 const useStyles = makeStyles({
@@ -11,6 +11,7 @@ const useStyles = makeStyles({
   },
   pos: {
     marginBottom: 12,
+    marginTop: 12,
   },
 });
 
@@ -30,21 +31,17 @@ export const ValidatorsStats = (props: { stash: String, activeEras: ActiveEra[];
     lastBlock = sortedByBlock[sortedByBlock.length - 1];
     scoringPeriodText = `Validator Date: ${new Date(firstBlock!.date).toLocaleDateString()}-${new Date(lastBlock!.date).toLocaleDateString()}\nDescription: I was an active validator from era/block ${firstBlock!.era}/${firstBlock!.block} to era/block ${lastBlock!.era}/${lastBlock!.block}\nwith stash account ${props.stash}. (I was active in all the eras in this range and found a total of ? blocks)`
     return (
-      <Grid container item lg={12}>
         <Card className={classes.root}>
           <CardContent>
             <Typography className={classes.title} color="textPrimary" gutterBottom>
               Scoring period text:
             </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              { scoringPeriodText.split('\n').map((i) => <div>{i}</div>) }
-            </Typography>
+            { scoringPeriodText.split('\n').map((i, key) => <Typography key={key} className={classes.pos} color="textSecondary">{i}</Typography>) }
           </CardContent>
           <CardActions>
             <Button onClick={copyValidatorStatistics} size="small">Copy to clipboard</Button>
           </CardActions>
         </Card>
-      </Grid>
     );
   } else {
     return (

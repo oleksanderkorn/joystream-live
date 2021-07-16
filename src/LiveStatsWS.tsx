@@ -1,4 +1,3 @@
-import joystream from './joystream.svg';
 import './App.css';
 import { getValidatorStatistics, getChainState } from './get-status';
 import { Container, FormControlLabel, Grid, Switch, TextField } from '@material-ui/core';
@@ -10,17 +9,17 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
 import { ValidatorsStats } from './ValidatorsStats';
 
-const JoystreamApp = () => {
+const LiveStatsWS = () => {
   const [shouldStop, setShouldStop] = useState(false);
   const [searchOptimized, setSearchOptimized] = useState(true);
   const [activeEras, setActiveEras] = useState([] as ActiveEra[]);
   const [columns] = useState(
     [
-      { field: 'era', headerName: 'Era', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'block', headerName: 'Block', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'date', headerName: 'Date', width: 200, sortable: true, headerAlign: 'center' },
-      { field: 'points', headerName: 'Points', width: 100, sortable: true, headerAlign: 'center' },
-      { field: 'hash', headerName: 'Block Hash', width: 500, sortable: false, headerAlign: 'center' },
+      { field: 'era', headerName: 'Era', width: 100, sortable: true },
+      { field: 'block', headerName: 'Block', width: 100, sortable: true },
+      { field: 'date', headerName: 'Date', width: 200, sortable: true },
+      { field: 'points', headerName: 'Points', width: 100, sortable: true },
+      { field: 'hash', headerName: 'Block Hash', width: 500, sortable: false },
     ]
   );
   const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');
@@ -72,7 +71,7 @@ const JoystreamApp = () => {
     }
     return searchOptimized ? Number(startBlock) + 600 : Number(startBlock)
   }
-  
+
   const fetchBlocksData = async () => {
     resetDataBeforeLoading();
     let isValidInCurrentEra = false
@@ -141,55 +140,60 @@ const JoystreamApp = () => {
   const updateSearchOptimized = (event: React.ChangeEvent<HTMLInputElement>) => setSearchOptimized(event.target.checked);
 
   return (
-    <div className="App" >
-      <Container maxWidth="lg">
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
-          spacing={3}
-        >
-          <Grid container item lg={12}></Grid>
-          <img src={joystream} className="App-logo" alt="Joystream logo" />
-          <Grid container item lg={12}>
-            <Autocomplete
-              freeSolo
-              style={{ width: '100%' }}
-              options={activeValidators}
-              onChange={(e, value) => setStash(value || '')}
-              value={stash}
-              renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
-          </Grid>
-          <Grid container item lg={12}>
-            <TextField type="number" onChange={updateStartBlock} style={{ width: '44%', marginRight: '14px' }} id="block-start" label="Start Block" value={startBlock} variant="filled" />
-            <FormControlLabel
-              style={{ width: '110px', marginRight: '20px'}}
-              control={
-                <Switch
-                  checked={searchOptimized}
-                  onChange={updateSearchOptimized}
-                  name="searchOptimized"
-                  color="primary"
-                />
-              }
-              disabled={isLoading}
-              label={searchOptimized ? "Optimized search": "Full search"}
-            />
-            <TextField type="number" onChange={updateEndblock} style={{ width: '44%', marginLeft: '14px'}} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
-          </Grid>
-          <ValidatorsStats stash={stash} activeEras={activeEras} />
-          <Grid container item lg={12}>
-            <BootstrapButton disabled={shouldDisableButton} fullWidth onClick={startOrStopLoading} color="primary">{isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
-          </Grid>
+    <Container maxWidth="lg">
+      <Grid
+        container
+        spacing={2}
+      >
+        <Grid item xs={12} lg={12}>
+          <h1>Live Stats</h1>
+        </Grid>
+        <Grid item xs={12} lg={12}>
+          <Autocomplete
+            fullWidth
+            freeSolo
+            options={activeValidators}
+            onChange={(e, value) => setStash(value || '')}
+            value={stash}
+            renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
+        </Grid>
+        <Grid item xs={4} lg={5}>
+          <TextField fullWidth type="number" onChange={updateStartBlock} id="block-start" label="Start Block" value={startBlock} variant="filled" />
+        </Grid>
+        <Grid item xs={4} lg={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={searchOptimized}
+                onChange={updateSearchOptimized}
+                name="searchOptimized"
+                color="primary"
+              />
+            }
+            disabled={isLoading}
+            label={searchOptimized ? "Optimized search" : "Full search"}
+          />
+        </Grid>
+        <Grid item xs={4} lg={5}>
+          <TextField fullWidth type="number" onChange={updateEndblock} id="block-end" label={endBlockLabel} value={endBlock} variant="filled" />
+        </Grid>
+        <Grid item xs={12} lg={12}>
+          <BootstrapButton size='large' style={{ minHeight: 56 }} disabled={shouldDisableButton} fullWidth onClick={startOrStopLoading} color="primary">{isLoading ? 'Stop loading' : 'Load data'}</BootstrapButton>
+        </Grid>
+        <Grid item xs={12} lg={12}>
           <LinearProgressWithLabel {...progress} />
-          <div style={{ height: 600, width: '98%' }}>
+        </Grid>
+        <Grid item xs={12} lg={12}>
+          <ValidatorsStats stash={stash} activeEras={activeEras} />
+        </Grid>
+        <Grid item xs={12} lg={12}>
+          <div style={{ height: 600 }}>
             <DataGrid rows={activeEras} columns={columns as unknown as ColDef[]} pageSize={50} />
           </div>
         </Grid>
-      </Container>
-    </div>
+      </Grid>
+    </Container>
   );
 }
 
-export default JoystreamApp
+export default LiveStatsWS

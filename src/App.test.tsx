@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import JoystreamApp from './App';
+import LiveStatsWS from './LiveStatsWS';
 
 test('renders learn react link', () => {
-  render(<JoystreamApp />);
+  render(<LiveStatsWS />);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });
