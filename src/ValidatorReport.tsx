@@ -146,7 +146,7 @@ const ValidatorReport = () => {
                                     value={backendUrl}
                                     onChange={(e) => setBackendUrl(e.target.value as unknown as string)}
                                 >
-                                <MenuItem value={'http://51.195.203.169:3500'}>51.195.203.169:3500</MenuItem>
+                                <MenuItem value={'https://validators.joystreamstats.live'}>validators.joystreamstats.live</MenuItem>
                                 <MenuItem value={'https://joystream-api.herokuapp.com'}>joystream-api.herokuapp.com</MenuItem>
                                 <MenuItem value={'http://localhost:3500'}>localhost:3500</MenuItem>
                                 </Select>
