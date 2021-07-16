@@ -1,7 +1,11 @@
 import './App.css';
 import { getChainState } from './get-status';
 import moment from 'moment'
-import { Button, Card, CardActions, CardContent, CircularProgress, Container, createStyles, Grid, makeStyles, TextField, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, CircularProgress, Container, createStyles, FormControl, Grid, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import Edit from '@material-ui/icons/Edit';
 import { BootstrapButton } from './BootstrapButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useState } from 'react';
@@ -24,7 +28,7 @@ const useStyles = makeStyles(() =>
 
 const ValidatorReport = () => {
     const dateFormat = 'yyyy-MM-DD';
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3500";
+    const [backendUrl, setBackendUrl] = useState(process.env.REACT_APP_BACKEND_URL || "http://localhost:3500");
     const [activeValidators, setActiveValidators] = useState([]);
     const [lastBlock, setLastBlock] = useState(0);
     const [stash, setStash] = useState('5EhDdcWm4TdqKp1ew1PqtSpoAELmjbZZLm5E34aFoVYkXdRW');
@@ -33,6 +37,7 @@ const ValidatorReport = () => {
     const [startBlock, setStartBlock] = useState('' as unknown as number);
     const [endBlock, setEndBlock] = useState('' as unknown as number);
     const [isLoading, setIsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(undefined);
     const [columns] = useState(
         [
@@ -128,7 +133,25 @@ const ValidatorReport = () => {
             <Container maxWidth="lg">
                 <Grid container spacing={2}>
                     <Grid item lg={12}>
-                        <h1>Validator Report</h1>
+                        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <h1>Validator Report</h1>
+                            <Button style={{ fontSize: 12, alignSelf: 'center'}} onClick={() => setIsModalOpen(true)}><Edit style={{ fontSize: 12, alignSelf: 'center'}} /> Backend</Button>
+                        </div>
+                        <Dialog style={{ minWidth: 275 }} onClose={() => setIsModalOpen(false)} aria-labelledby="simple-dialog-title" open={isModalOpen}>
+                            <DialogTitle id="simple-dialog-title">Change Backend URL</DialogTitle>
+                            <FormControl style={ { margin: 12 }}>
+                                <Select
+                                    labelId="backend-url-label"
+                                    id="backend-url"
+                                    value={backendUrl}
+                                    onChange={(e) => setBackendUrl(e.target.value as unknown as string)}
+                                >
+                                <MenuItem value={'http://51.195.203.169:3500'}>51.195.203.169:3500</MenuItem>
+                                <MenuItem value={'https://joystream-api.herokuapp.com'}>joystream-api.herokuapp.com</MenuItem>
+                                <MenuItem value={'http://localhost:3500'}>localhost:3500</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Dialog>
                     </Grid>
                     <Grid item xs={12} lg={12}>
                         <Autocomplete
