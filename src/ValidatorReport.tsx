@@ -39,6 +39,7 @@ const ValidatorReport = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(undefined);
+    const [currentPage, setCurrentPage] = useState(1);
     const [columns] = useState(
         [
             { field: 'id', headerName: 'Era', width: 150, sortable: true },
@@ -88,6 +89,7 @@ const ValidatorReport = () => {
     }
 
     const loadReport = (page: number) => {
+        setCurrentPage(page)
         setIsLoading(true)
         const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
         const dateParam = !(startBlock && endBlock) && dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).format(dateFormat)}&end_time=${moment(dateTo, dateFormat).format(dateFormat)}` : ''
@@ -109,7 +111,7 @@ const ValidatorReport = () => {
     }
 
     const canLoadReport = () => stash && ((startBlock && endBlock) || (dateFrom && dateTo))
-    const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport(1);
+    const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport(1)
     const updateStartBlock = (e: { target: { value: unknown; }; }) => setStartBlock((e.target.value as unknown as number));
     const updateEndblock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
     const updateDateFrom = (e: { target: { value: unknown; }; }) => setDateFrom((e.target.value as unknown as string))
@@ -135,7 +137,7 @@ const ValidatorReport = () => {
                     <Grid item lg={12}>
                         <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                             <h1>Validator Report</h1>
-                            <Button style={{ fontSize: 12, alignSelf: 'center'}} onClick={() => setIsModalOpen(true)}><Edit style={{ fontSize: 12, alignSelf: 'center'}} /> Backend</Button>
+                            <Button style={{ display: 'none', fontSize: 12, alignSelf: 'center'}} onClick={() => setIsModalOpen(true)}><Edit style={{ fontSize: 12, alignSelf: 'center'}} /> Backend</Button>
                         </div>
                         <Dialog style={{ minWidth: 275 }} onClose={() => setIsModalOpen(false)} aria-labelledby="simple-dialog-title" open={isModalOpen}>
                             <DialogTitle id="simple-dialog-title">Change Backend URL</DialogTitle>
@@ -194,7 +196,7 @@ const ValidatorReport = () => {
                         <ValidatorReportCard stash={stash} report={report} />
                     </Grid>
                     <Grid item xs={12} lg={12}>
-                        <div style={{ height: 600 }}>
+                        <div style={{ height: 400 }}>
                             <DataGrid 
                                 rows={report.report} 
                                 columns={columns as unknown as ColDef[]}
@@ -204,7 +206,8 @@ const ValidatorReport = () => {
                                 pageSize={report.pageSize}
                                 rowsPerPageOptions={[]}
                                 disableSelectionOnClick
-                                autoHeight
+                                page={currentPage}
+                                // autoHeight
                                 />
                         </div>
                     </Grid>
