@@ -1,7 +1,7 @@
 import './App.css';
 import { getChainState } from './get-status';
 import moment from 'moment'
-import { Card, CardActions, CardContent, CircularProgress, Container, createStyles, FormControl, Grid, makeStyles, MenuItem, Select, TextField, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, CircularProgress, Container, createStyles, FormControl, Grid, makeStyles, MenuItem, Select, Tab, TextField, Typography } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
@@ -14,6 +14,7 @@ import { config } from "dotenv";
 import { Report, Reports } from './Types';
 import { ColDef, DataGrid, PageChangeParams, ValueFormatterParams } from '@material-ui/data-grid';
 import Alert from '@material-ui/lab/Alert';
+import Tabs from '@material-ui/core/Tabs';
 
 config();
 
@@ -40,6 +41,7 @@ const ValidatorReport = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(undefined);
     const [currentPage, setCurrentPage] = useState(1);
+    const [filterTab, setFilterTab] = useState(0 as number);
     const [columns] = useState(
         [
             { field: 'id', headerName: 'Era', width: 150, sortable: true },
@@ -91,8 +93,8 @@ const ValidatorReport = () => {
     const loadReport = (page: number) => {
         setCurrentPage(page)
         setIsLoading(true)
-        const blockParam = startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
-        const dateParam = !(startBlock && endBlock) && dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).format(dateFormat)}&end_time=${moment(dateTo, dateFormat).format(dateFormat)}` : ''
+        const blockParam = filterTab === 1 && startBlock && endBlock ? `&start_block=${startBlock}&end_block=${endBlock}` : ''
+        const dateParam = filterTab === 0 && dateFrom && dateTo ? `&start_time=${moment(dateFrom, dateFormat).format(dateFormat)}&end_time=${moment(dateTo, dateFormat).format(dateFormat)}` : ''
         const apiUrl = `${backendUrl}/validator-report?addr=${stash}&page=${page}${blockParam}${dateParam}`
         axios.get(apiUrl).then((response) => {
             if (response.data.report !== undefined) {
@@ -110,7 +112,7 @@ const ValidatorReport = () => {
         setIsLoading(false)
     }
 
-    const canLoadReport = () => stash && ((startBlock && endBlock) || (dateFrom && dateTo))
+    const canLoadReport = () => stash && ((filterTab === 1 && startBlock && endBlock) || (filterTab === 0 && dateFrom && dateTo))
     const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport(1)
     const updateStartBlock = (e: { target: { value: unknown; }; }) => setStartBlock((e.target.value as unknown as number));
     const updateEndblock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
@@ -121,11 +123,11 @@ const ValidatorReport = () => {
         if (isLoading) {
             return (<div style={{ display: 'flex', alignItems: 'center' }}>Stop loading <CircularProgress style={ { color: '#fff', height: 20, width: 20, marginLeft: 12 } } /></div>)
         }
-        if (startBlock && endBlock) {
-            return `Load data between blocks ${startBlock} - ${endBlock}`
+        if (filterTab === 1) {
+            return startBlock && endBlock ? `Load data between blocks ${startBlock} - ${endBlock}` : 'Load data between blocks'
         }
-        if (dateFrom && dateTo) {
-            return `Load data between dates ${dateFrom} - ${dateTo}`;
+        if (filterTab === 0) {
+            return dateFrom && dateTo ? `Load data between dates ${dateFrom} - ${dateTo}` : 'Load data between dates'
         }
         return 'Choose dates or blocks range'
     }
@@ -164,29 +166,35 @@ const ValidatorReport = () => {
                             value={stash}
                             renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
                     </Grid>
-                    <Grid item xs={6} lg={3}>
+                    <Grid item xs={12} lg={12}>
+                        <Tabs indicatorColor='primary' value={filterTab} onChange={(e: unknown, newValue: number) => setFilterTab(newValue)} aria-label="simple tabs example">
+                            <Tab label="Search by date range" />
+                            <Tab label="Search by blocks range" />
+                        </Tabs>
+                    </Grid>
+                    <Grid hidden={filterTab !== 0} item xs={6} lg={3}>
                         <TextField fullWidth type="date" onChange={updateDateFrom} id="block-start" InputLabelProps={{ shrink: true }} label="Date From" value={dateFrom} variant="filled" />
                     </Grid>
-                    <Grid item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth onClick={() => setDateFrom(moment().subtract(2, 'w').format('yyyy-MM-DD'))}>2 weeks from today</BootstrapButton>
+                    <Grid hidden={filterTab !== 0} item xs={6} lg={3}>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth onClick={() => setDateFrom(moment().subtract(2, 'w').format('yyyy-MM-DD'))}>2 weeks from today</BootstrapButton>
                     </Grid>
-                    <Grid item xs={6} lg={3}>
+                    <Grid hidden={filterTab !== 0} item xs={6} lg={3}>
                         <TextField fullWidth type="date" onChange={updateDateTo} id="block-end" InputLabelProps={{ shrink: true }} label="Date To" value={dateTo} variant="filled" />
                     </Grid>
-                    <Grid item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth onClick={() => setDateTo(moment().format('yyyy-MM-DD'))}>Today</BootstrapButton>
+                    <Grid hidden={filterTab !== 0} item xs={6} lg={3}>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth onClick={() => setDateTo(moment().format('yyyy-MM-DD'))}>Today</BootstrapButton>
                     </Grid>
-                    <Grid item xs={6} lg={3}>
+                    <Grid hidden={filterTab !== 1} item xs={6} lg={3}>
                         <TextField fullWidth type="number" onChange={updateStartBlock} id="block-start" label="Start Block" value={startBlock} variant="filled" />
                     </Grid>
-                    <Grid item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!lastBlock} onClick={() => setStartBlock(lastBlock - (600 * 24 * 14))}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
+                    <Grid hidden={filterTab !== 1} item xs={6} lg={3}>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setStartBlock(lastBlock - (600 * 24 * 14))}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
                     </Grid>
-                    <Grid item xs={6} lg={3}>
+                    <Grid hidden={filterTab !== 1} item xs={6} lg={3}>
                         <TextField fullWidth type="number" onChange={updateEndblock} id="block-end" label="End Block" value={endBlock} variant="filled" />
                     </Grid>
-                    <Grid item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
+                    <Grid hidden={filterTab !== 1} item xs={6} lg={3}>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
                     </Grid>
                     <Grid item xs={12} lg={12}>
                         <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
@@ -207,7 +215,6 @@ const ValidatorReport = () => {
                                 rowsPerPageOptions={[]}
                                 disableSelectionOnClick
                                 page={currentPage}
-                                // autoHeight
                                 />
                         </div>
                     </Grid>
