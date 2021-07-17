@@ -178,8 +178,8 @@ const ValidatorReport = () => {
                     </Grid>
                     <Grid item xs={12} lg={12}>
                         <Tabs indicatorColor='primary' value={filterTab} onChange={(e: unknown, newValue: number) => setFilterTab(newValue)} aria-label="simple tabs example">
-                            <Tab label="Search by date range" />
-                            <Tab label="Search by blocks range" />
+                            <Tab label="Search by date" />
+                            <Tab label="Search by blocks" />
                         </Tabs>
                     </Grid>
                     <Grid hidden={!isDateRange} item xs={6} lg={3}>
@@ -207,7 +207,7 @@ const ValidatorReport = () => {
                         <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
                     </Grid>
                     <Grid item xs={12} lg={12}>
-                        <BootstrapButton size='large' style={{ minHeight: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
                         <Alert style={ error !== undefined ? { marginTop: 12 } : { display: 'none'} } onClose={() => setError(undefined)} severity="error">Error loading validator report, please try again.</Alert>
                     </Grid>
                     <Grid item xs={12} lg={12}>
