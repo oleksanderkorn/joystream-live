@@ -44,14 +44,12 @@ export class JoyApi {
       this.api.rpc.system.chain(),
       this.api.rpc.system.name(),
       this.api.rpc.system.version(),
-      // this.api.rpc.system.peers(),
     ]);
 
     return {
       chain: chain.toString(),
       nodeName: nodeName.toString(),
       nodeVersion: nodeVersion.toString(),
-      // peerCount: peers.length,
     };
   }
 
