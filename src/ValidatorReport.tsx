@@ -130,6 +130,14 @@ const ValidatorReport = () => {
     const updateDateFrom = (e: { target: { value: unknown; }; }) => setDateFrom((e.target.value as unknown as string))
     const updateDateTo = (e: { target: { value: unknown; }; }) => setDateTo((e.target.value as unknown as string));
 
+    const setCurrentPeriodStartBlock = () => {
+        const blocksToEndOfDay = moment().endOf('d').diff(moment(), "seconds") / 6
+        const twoWeeksBlocks = (600 * 24 * 14);
+        return setStartBlock(lastBlock - twoWeeksBlocks - Number(blocksToEndOfDay.toFixed(0)))
+    }
+
+    const setCurrentPeriodEndBlock = () => setEndBlock(lastBlock)
+
     const getButtonTitle = (isLoading: boolean) => {
         if (isLoading) {
             return (<div style={{ display: 'flex', alignItems: 'center' }}>Stop loading <CircularProgress style={ { color: '#fff', height: 20, width: 20, marginLeft: 12 } } /></div>)
@@ -208,13 +216,13 @@ const ValidatorReport = () => {
                         <TextField fullWidth type="number" onChange={updateStartBlock} id="block-start" label="Start Block" value={startBlock} variant="filled" />
                     </Grid>
                     <Grid hidden={!isBlockRange} item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setStartBlock(lastBlock - (600 * 24 * 14))}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={setCurrentPeriodStartBlock}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
                     </Grid>
                     <Grid hidden={!isBlockRange} item xs={6} lg={3}>
                         <TextField fullWidth type="number" onChange={updateEndBlock} id="block-end" label="End Block" value={endBlock} variant="filled" />
                     </Grid>
                     <Grid hidden={!isBlockRange} item xs={6} lg={3}>
-                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
+                        <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={setCurrentPeriodEndBlock}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
                     </Grid>
                     <Grid item xs={12} lg={12}>
                         <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!canLoadReport()} onClick={startOrStopLoading}>{getButtonTitle(isLoading)}</BootstrapButton>
