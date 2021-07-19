@@ -1,6 +1,18 @@
-# Getting Started with Create React App
+# Joystream Validator Loggin Tool UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To get a validator report you can choose your validator stash account from autocomplete
+or copy-paste your own stash if your validator is not active atm.
+
+Then you can use either a date filter or blocks filter tab to filter your data per period.
+In every tab, there are buttons to prefill filter with the last two weeks (or the block equivalent).
+When data is loaded app generates a string that can be copied directly to the submission report for the validator.
+(For now, it assumes that the validator was active all the period.)
+Then you can use the button to copy the report string to the clipboard and then use it in your submission.
+In the table below the valdiator report you can see the list of eras with some metadata and the number of blocks produced by your validator.
+
+## Demo
+
+Live version is accessible at [gh-pages](https://oleksanderkorn.github.io/joystream-live/)
 
 ## Available Scripts
 
@@ -29,18 +41,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
+### `yarn deploy`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Builds the app for production to the `build` folder and deploys to github-pages using `gh-pages` library.
