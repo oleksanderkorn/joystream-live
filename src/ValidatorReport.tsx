@@ -7,8 +7,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import { BootstrapButton } from './BootstrapButton';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useEffect, useState } from 'react';
+import Autocomplete, { AutocompleteChangeDetails } from '@material-ui/lab/Autocomplete';
+import { ChangeEvent, FocusEvent, useEffect, useState } from 'react';
 import axios from 'axios'
 import { config } from "dotenv";
 import { Report, Reports } from './Types';
@@ -16,6 +16,7 @@ import { ColDef, DataGrid, PageChangeParams, ValueFormatterParams } from '@mater
 import Alert from '@material-ui/lab/Alert';
 import Tabs from '@material-ui/core/Tabs';
 import Backdrop from '@material-ui/core/Backdrop';
+import { AutocompleteChangeReason } from '@material-ui/lab';
 
 config();
 
@@ -125,7 +126,7 @@ const ValidatorReport = () => {
     const canLoadReport = () => stash && ((isBlockRange && startBlock && endBlock) || (isDateRange && dateFrom && dateTo))
     const startOrStopLoading = () => isLoading ? stopLoadingReport() : loadReport(1)
     const updateStartBlock = (e: { target: { value: unknown; }; }) => setStartBlock((e.target.value as unknown as number));
-    const updateEndblock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
+    const updateEndBlock = (e: { target: { value: unknown; }; }) => setEndBlock((e.target.value as unknown as number));
     const updateDateFrom = (e: { target: { value: unknown; }; }) => setDateFrom((e.target.value as unknown as string))
     const updateDateTo = (e: { target: { value: unknown; }; }) => setDateTo((e.target.value as unknown as string));
 
@@ -141,6 +142,14 @@ const ValidatorReport = () => {
         }
         return 'Choose dates or blocks range'
     }
+    const updateStash = (event: ChangeEvent<{}>, value: string | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<string> | undefined) => {
+        setStash(value || '')
+    }
+    
+    const updateStashOnBlur = (event: FocusEvent<HTMLDivElement> & { target: HTMLInputElement}) => {
+        setStash((prev) => prev !== event.target.value ? event.target.value : prev)
+    }
+
     const classes = useStyles();
     return (
         <div className={classes.root}>
@@ -172,7 +181,8 @@ const ValidatorReport = () => {
                             freeSolo
                             style={{ width: '100%' }}
                             options={activeValidators}
-                            onChange={(e, value) => setStash(value || '')}
+                            onChange={updateStash}
+                            onBlur={updateStashOnBlur}
                             value={stash}
                             renderInput={(params) => <TextField {...params} label="Validator stash address" variant="filled" />} />
                     </Grid>
@@ -201,7 +211,7 @@ const ValidatorReport = () => {
                         <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setStartBlock(lastBlock - (600 * 24 * 14))}>{lastBlock ? `2 weeks before latest (${lastBlock - (600 * 24 * 14)})` : '2 weeks from latest'}</BootstrapButton>
                     </Grid>
                     <Grid hidden={!isBlockRange} item xs={6} lg={3}>
-                        <TextField fullWidth type="number" onChange={updateEndblock} id="block-end" label="End Block" value={endBlock} variant="filled" />
+                        <TextField fullWidth type="number" onChange={updateEndBlock} id="block-end" label="End Block" value={endBlock} variant="filled" />
                     </Grid>
                     <Grid hidden={!isBlockRange} item xs={6} lg={3}>
                         <BootstrapButton size='large' style={{ height: 56 }} fullWidth disabled={!lastBlock} onClick={() => setEndBlock(lastBlock)}>{lastBlock ? `Pick latest block (${lastBlock})` : 'Use latest block'}</BootstrapButton>
