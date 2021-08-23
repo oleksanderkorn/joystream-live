@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/joystream-live/static/css/main.e105bbad.chunk.css",
-    "main.js": "/joystream-live/static/js/main.677ac465.chunk.js",
-    "main.js.map": "/joystream-live/static/js/main.677ac465.chunk.js.map",
-    "runtime-main.js": "/joystream-live/static/js/runtime-main.1fd7581d.js",
-    "runtime-main.js.map": "/joystream-live/static/js/runtime-main.1fd7581d.js.map",
-    "static/js/2.cda5e74c.chunk.js": "/joystream-live/static/js/2.cda5e74c.chunk.js",
-    "static/js/2.cda5e74c.chunk.js.map": "/joystream-live/static/js/2.cda5e74c.chunk.js.map",
-    "static/js/3.da1086a8.chunk.js": "/joystream-live/static/js/3.da1086a8.chunk.js",
-    "static/js/3.da1086a8.chunk.js.map": "/joystream-live/static/js/3.da1086a8.chunk.js.map",
+    "main.css": "/joystream-live/static/css/main.e3194bbb.chunk.css",
+    "main.js": "/joystream-live/static/js/main.eaa19f34.chunk.js",
+    "main.js.map": "/joystream-live/static/js/main.eaa19f34.chunk.js.map",
+    "runtime-main.js": "/joystream-live/static/js/runtime-main.2bd052a6.js",
+    "runtime-main.js.map": "/joystream-live/static/js/runtime-main.2bd052a6.js.map",
+    "static/js/2.bdff1a4c.chunk.js": "/joystream-live/static/js/2.bdff1a4c.chunk.js",
+    "static/js/2.bdff1a4c.chunk.js.map": "/joystream-live/static/js/2.bdff1a4c.chunk.js.map",
+    "static/js/3.545a9fa3.chunk.js": "/joystream-live/static/js/3.545a9fa3.chunk.js",
+    "static/js/3.545a9fa3.chunk.js.map": "/joystream-live/static/js/3.545a9fa3.chunk.js.map",
     "index.html": "/joystream-live/index.html",
-    "static/css/main.e105bbad.chunk.css.map": "/joystream-live/static/css/main.e105bbad.chunk.css.map",
-    "static/js/2.cda5e74c.chunk.js.LICENSE.txt": "/joystream-live/static/js/2.cda5e74c.chunk.js.LICENSE.txt",
+    "static/css/main.e3194bbb.chunk.css.map": "/joystream-live/static/css/main.e3194bbb.chunk.css.map",
+    "static/js/2.bdff1a4c.chunk.js.LICENSE.txt": "/joystream-live/static/js/2.bdff1a4c.chunk.js.LICENSE.txt",
     "static/media/joystream.e2f4466b.svg": "/joystream-live/static/media/joystream.e2f4466b.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.1fd7581d.js",
-    "static/js/2.cda5e74c.chunk.js",
-    "static/css/main.e105bbad.chunk.css",
-    "static/js/main.677ac465.chunk.js"
+    "static/js/runtime-main.2bd052a6.js",
+    "static/js/2.bdff1a4c.chunk.js",
+    "static/css/main.e3194bbb.chunk.css",
+    "static/js/main.eaa19f34.chunk.js"
   ]
 }
