@@ -1,4 +1,4 @@
-# Joystream Validator Loggin Tool UI
+# Joystream Validator Logging Tool UI
 
 To get a validator report you can choose your validator stash account from autocomplete
 or copy-paste your own stash if your validator is not active atm.
